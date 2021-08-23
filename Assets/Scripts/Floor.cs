@@ -12,6 +12,8 @@ namespace GameGeneration
         private List<Vector3> gridPositions = new List<Vector3>();
         private int floorNo { get; set; }
         private int levelNo { get; set; }
+        private int startX { get; set; }
+        private int startY { get; set; }
         private int floorWidth { get; set; }
         private int floorHeight { get; set; }
         private Cell[,] rooms { get; set; } // Designates a 2D array
@@ -37,14 +39,18 @@ namespace GameGeneration
         /// <summary>
         /// Setup the parameters for the current floor
         /// </summary>
+        /// <param name="startX">The Start X Position</param>
+        /// <param name="startY">The Start Y Position</param>
         /// <param name="floorWidth">Width of the floor</param>
         /// <param name="floorHeight">Height of the floor</param>
         /// <param name="floorNo">Current floor number</param>
         /// <param name="levelNo">Current level number</param>
         /// <param name="containsShop">Whether the floor should contain a shop</param>
         /// <param name="containsSecret">Whether the floor should contain secrets</param>
-        public void SetupFloor(int floorWidth, int floorHeight, int floorNo, int levelNo, bool containsShop, bool containsSecret)
+        public void SetupFloor(int startX, int startY, int floorWidth, int floorHeight, int floorNo, int levelNo, bool containsShop, bool containsSecret)
         {
+            this.startX = startX;
+            this.startY = startY;
             this.floorWidth = floorWidth;
             this.floorHeight = floorHeight;
             this.floorNo = floorNo;
@@ -56,39 +62,8 @@ namespace GameGeneration
             {
                 noSecrets = rand.Range(1, 2); // returns either 1 or 2;
             }
-            InitGrid();
-            GenerateFloor();
-        }
 
-        /// <summary>
-        /// Initialise the grid for the current floor
-        /// </summary>
-        public void InitGrid()
-        {
-            floor = new GameObject("Floor").transform;
-
-            for (int x = 0; x < floorWidth * Rooms.roomWidth; x++)
-            {
-                for (int y = 0; y < floorWidth * Rooms.roomHeight; y++)
-                {
-                    gridPositions.Add(new Vector3(x, y, 0f));
-                }
-            }
-        }
-
-        public void PrintFloor()
-        {
-            // Print each floor for the level
-            for (int y = 0; y < floorWidth; y++)
-            {
-                string row = "";
-                for (int x = 0; x < floorHeight; x++)
-                {
-                    row += "[" + rooms[x, y].ToString().Substring(0, 2) + "]";
-                }
-                Debug.Log(row);
-            }
-            Debug.Log("\n");
+            GenerateFloor(startX, startY);
         }
 
         /// <summary>
@@ -118,8 +93,21 @@ namespace GameGeneration
             return Rooms.GetUnpopulatedAdjacentCells(position, rooms, floorWidth, floorHeight).Count < 8;
         }
 
-        public void GenerateFloor()
+        /// <summary>
+        /// Converts the current vector3 to a relevant vector3 based on the floors start X and Y position
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public Vector3 ConvertToRelevantCoordinate(Vector3 position)
         {
+            position.x = Convert.ToInt32(position.x) + startX;
+            position.y = Convert.ToInt32(position.y) + startY;
+            return position;
+        }
+
+        public void GenerateFloor(int intialX, int initialY)
+        {
+            floor = new GameObject("Floor_" + levelNo + "_" + floorNo).transform;
             rooms = new Cell[floorWidth, floorHeight];
 
             // === Add Boss Room === //
@@ -128,7 +116,6 @@ namespace GameGeneration
                 Debug.Log("=== Adding Boss Room ===");
                 int x = rand.Range(0, floorWidth - 1); // will never be last column or row
                 int y = rand.Range(0, floorHeight - 1);
-
 
                 AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.bottom_left_corner), bossTiles[2], Cell.CellType.boss);
                 AddRoom(Tuple.Create(new Vector3(x + 1, y, 0f), Walls.WallTypes.bottom_right_corner), bossTiles[3], Cell.CellType.boss);
@@ -253,10 +240,9 @@ namespace GameGeneration
             // === Create a standard room === //
             AddRoom(Tuple.Create(position, Walls.WallTypes.all_walls), floorTiles[0], Cell.CellType.room);
             return;
-
-
         }
 
+        // TODO - Update logic to create full size rooms
         public void CreateRoom(int startX, int startY, string[,] roomToMake, GameObject tile)
         {
             for (int x = 0; x < roomToMake.GetLength(0); x++)
@@ -282,72 +268,40 @@ namespace GameGeneration
                 }
             }
         }
-
+        /// <summary>
+        /// Add a room at the specified coordinate with the specified tile
+        /// </summary>
+        /// <param name="position">Tuple of Vector3 and WallType to determine how to add walls</param>
+        /// <param name="toInstantiate"></param>
+        /// <param name="cellType"></param>
         public void AddRoom(Tuple<Vector3, Walls.WallTypes> position, GameObject toInstantiate, Cell.CellType cellType)
         {
-            int x = Convert.ToInt32(position.Item1.x);
-            int y = Convert.ToInt32(position.Item1.y);
-            rooms[x, y] = new Cell(cellType, x, y);
-            (Instantiate(toInstantiate, position.Item1, Quaternion.identity) as GameObject).transform.SetParent(floor);
+            // Extract the vector
+            Vector3 posVector = position.Item1;
 
+            // Get x & y for cell
+            int x = Convert.ToInt32(posVector.x);
+            int y = Convert.ToInt32(posVector.y);
+            rooms[x, y] = new Cell(cellType, x, y);
+
+            // Get the relevant position to the start X & Y
+            posVector = ConvertToRelevantCoordinate(posVector);
+
+            // Instantiate the cell
+            (Instantiate(toInstantiate, posVector, Quaternion.identity) as GameObject).transform.SetParent(floor);
+
+            // Instantiate the wall
             AddWall(position);
         }
 
         public void AddWall(Tuple<Vector3, Walls.WallTypes> wall)
         {
-            (Instantiate(wallTiles[(int)wall.Item2], wall.Item1, Quaternion.identity) as GameObject).transform.SetParent(floor);
+            // Extract the vector
+            Vector3 posVector = wall.Item1;
+
+            // Get the relevant position to the start X & Y
+            posVector = ConvertToRelevantCoordinate(posVector);
+            (Instantiate(wallTiles[(int)wall.Item2], posVector, Quaternion.identity) as GameObject).transform.SetParent(floor);
         }
-
-        #region Rooms
-
-        #region Size 3
-
-
-
-
-        public void CreateRoomSize3(int startX, int startY, Rooms.Size3Shapes shape)
-        {
-
-        }
-
-        #endregion Size 3
-
-
-        #region Size 2
-
-        public void CreateRoomSize2(int x, int y, Rooms.Size2Shapes shape)
-        {
-            string[,] roomToMake = new string[0, 0];
-
-            switch (shape)
-            {
-                case Rooms.Size2Shapes.horizontal:
-                    {
-                        roomToMake = Rooms.size2_standard_h;
-                        break;
-                    }
-                case Rooms.Size2Shapes.vertical:
-                    {
-                        roomToMake = Rooms.size2_standard_v;
-                        break;
-                    }
-            }
-
-            CreateRoom(x, y, roomToMake, floorTiles[1]);
-        }
-
-        #endregion Size 2
-
-        #region Size 1
-
-
-        public void CreateRoomSize1(int x, int y)
-        {
-            string[,] roomToMake = Rooms.size1_standard;
-            CreateRoom(x, y, roomToMake, floorTiles[1]);
-        }
-
-        #endregion Size 1
-        #endregion Rooms
     }
 }

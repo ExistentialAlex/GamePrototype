@@ -1,15 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using rand = UnityEngine.Random;
-using System;
 namespace GameGeneration
 {
     public class GameGen : MonoBehaviour
     {
         public static GameGen instance = null;				//Static instance of GameManager which allows it to be accessed by any other script.
         public int noOfLevels = 2;
+        public int floorWidth = 5;
+        public int floorHeight = 5;
         public List<Level> levels { get; set; }
 
         void Awake()
@@ -41,11 +43,14 @@ namespace GameGeneration
             Debug.Log("=== Setting up Game ===");
             Debug.Log("=== Generating Levels ===");
             levels = new List<Level>();
+            int x = 0;
+            int y = 0;
             for (int i = 0; i < noOfLevels; i++)
             {
                 Level levelToCreate = GetComponent<Level>();
-                levelToCreate.SetupLevel(i);
+                levelToCreate.SetupLevel(i, x, y, floorWidth, floorHeight);
                 levels.Add(levelToCreate);
+                x += floorWidth + 1;
             }
         }
 

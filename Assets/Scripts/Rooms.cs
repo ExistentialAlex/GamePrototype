@@ -105,7 +105,6 @@ namespace GameGeneration
 
             if (x < floorWidth - 1 && y < floorHeight - 1 && rooms[x, y + 1] == null && rooms[x + 1, y + 1] == null)
             {
-
                 possibleRooms.Add(new List<Tuple<Vector3, Walls.WallTypes>>(){
                         Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.top_open_side),
                         Tuple.Create(new Vector3(x, y + 1, 0f), Walls.WallTypes.top_left_corner),
@@ -119,7 +118,6 @@ namespace GameGeneration
 
             else if (x < floorWidth - 1 && y > 0 && rooms[x + 1, y] == null && rooms[x + 1, y - 1] == null)
             {
-
                 possibleRooms.Add(new List<Tuple<Vector3, Walls.WallTypes>>(){
                         Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.right_open_side),
                         Tuple.Create(new Vector3(x + 1, y, 0f), Walls.WallTypes.top_right_corner),
@@ -133,7 +131,6 @@ namespace GameGeneration
 
             else if (x < floorWidth - 1 && y < floorHeight - 1 && rooms[x + 1, y] == null && rooms[x + 1, y + 1] == null)
             {
-
                 possibleRooms.Add(new List<Tuple<Vector3, Walls.WallTypes>>(){
                         Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.right_open_side),
                         Tuple.Create(new Vector3(x + 1, y, 0f), Walls.WallTypes.bottom_right_corner),
