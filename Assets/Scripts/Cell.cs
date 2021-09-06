@@ -20,13 +20,15 @@ namespace GameGeneration
         }
 
         public CellType type { get; }
-        private int xPosition { get; set; }
-        private int yPosition { get; set; }
-        public Cell(CellType type, int xPosition, int yPosition)
+        public Vector3 vectorPosition { get; set; }
+        public Walls.WallTypes wallType { get; set; }
+        public GameObject tile { get; set; }
+        public Cell(CellType type, Vector3 vectorPosition, Walls.WallTypes wallType, GameObject tile)
         {
             this.type = type;
-            this.xPosition = xPosition;
-            this.yPosition = yPosition;
+            this.vectorPosition = vectorPosition;
+            this.wallType = wallType;
+            this.tile = tile;
         }
 
         public override string ToString()

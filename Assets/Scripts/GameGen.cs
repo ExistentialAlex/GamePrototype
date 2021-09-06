@@ -8,7 +8,7 @@ namespace GameGeneration
 {
     public class GameGen : MonoBehaviour
     {
-        public static GameGen instance = null;				//Static instance of GameManager which allows it to be accessed by any other script.
+        public static GameGen instance = null;	//Static instance of GameManager which allows it to be accessed by any other script.
         public int noOfLevels = 2;
         public int floorWidth = 5;
         public int floorHeight = 5;
@@ -18,15 +18,17 @@ namespace GameGeneration
         {
             //Check if instance already exists
             if (instance == null)
-
+            {
                 //if not, set instance to this
                 instance = this;
+            }
 
             //If instance already exists and it's not this:
             else if (instance != this)
-
+            {
                 //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
                 Destroy(gameObject);
+            }
 
             //Sets this to not be destroyed when reloading scene
             DontDestroyOnLoad(gameObject);
@@ -50,16 +52,14 @@ namespace GameGeneration
                 Level levelToCreate = GetComponent<Level>();
                 levelToCreate.SetupLevel(i, x, y, floorWidth, floorHeight);
                 levels.Add(levelToCreate);
-                x += floorWidth + 1;
+                x += (floorWidth * (i + 1)) + (i + 1);
+            }
+
+            foreach (Level level in levels)
+            {
+                // TODO - Setup Logic to only instantiate the level when you've left the previous one
+                level.InstantiateLevel();
             }
         }
-
-
     }
-
-    // [Serializable]
-    // public class Room
-    // {
-    //     public Cell[,] cells { get; set; }
-    // }
 }
