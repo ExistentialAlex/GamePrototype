@@ -231,9 +231,13 @@ namespace GameGeneration
             // Get the relevant position to the start X & Y
             posVector = ConvertToRelevantCoordinate(posVector);
 
-            // Instantiate the cell
-            (Instantiate(cell.tile, posVector, Quaternion.identity) as GameObject).transform.SetParent(floor);
-            (Instantiate(wallTiles[(int)cell.wallType], posVector, Quaternion.identity) as GameObject).transform.SetParent(floor);
+            // // Instantiate the cell
+            // (Instantiate(cell.tile, posVector, Quaternion.identity) as GameObject).transform.SetParent(floor);
+            // (Instantiate(wallTiles[(int)cell.wallType], posVector, Quaternion.identity) as GameObject).transform.SetParent(floor);
+
+            
+            RoomGen roomToGenerate = GetComponent<RoomGen>();
+            roomToGenerate.SetupRoom(cell, floor, wallTiles);
         }
         public void AddStandardRoom(Vector3 position)
         {
