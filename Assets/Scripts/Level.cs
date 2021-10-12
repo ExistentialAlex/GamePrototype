@@ -35,6 +35,7 @@ namespace GameGeneration
                 floorToCreate.InstantiateFloor();
                 x += floorWidth + 1;
             }
+
             return generatedFloors;
         }
 

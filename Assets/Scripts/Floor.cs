@@ -131,6 +131,7 @@ namespace GameGeneration
                 Debug.Log("=== Adding Entrance Room ===");
                 GetRandomEmptyCell(rooms, out int x, out int y);
                 AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.all_walls), entranceTile, Cell.CellType.entrance);
+                // TODO - Make sure player is rendered after everything else
             }
 
 
@@ -231,11 +232,6 @@ namespace GameGeneration
             // Get the relevant position to the start X & Y
             posVector = ConvertToRelevantCoordinate(posVector);
 
-            // // Instantiate the cell
-            // (Instantiate(cell.tile, posVector, Quaternion.identity) as GameObject).transform.SetParent(floor);
-            // (Instantiate(wallTiles[(int)cell.wallType], posVector, Quaternion.identity) as GameObject).transform.SetParent(floor);
-
-            
             RoomGen roomToGenerate = GetComponent<RoomGen>();
             roomToGenerate.SetupRoom(cell, floor, wallTiles);
         }
