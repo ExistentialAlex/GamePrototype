@@ -233,7 +233,7 @@ namespace GameGeneration
             posVector = ConvertToRelevantCoordinate(posVector);
 
             RoomGen roomToGenerate = GetComponent<RoomGen>();
-            roomToGenerate.SetupRoom(cell, floor, wallTiles);
+            roomToGenerate.SetupRoom(cell, floor);
         }
         public void AddStandardRoom(Vector3 position)
         {
