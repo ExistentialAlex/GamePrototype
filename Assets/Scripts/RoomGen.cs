@@ -35,6 +35,7 @@ namespace GameGeneration
             }
 
             SetupWalls(room, floor, relativeStartX, relativeStartY);
+
             if (room.type == Cell.CellType.entrance)
             {
                 AssignPlayerPosition(relativeStartX + roomWidth / 2, relativeStartY + roomHeight / 2);

@@ -25,6 +25,7 @@ namespace GameGeneration
         private int noSecrets { get; set; }
 
         #region Tiles
+
         public GameObject[] floorTiles;
         public GameObject[] bossTiles;
         public GameObject[] shopTiles;
@@ -111,7 +112,6 @@ namespace GameGeneration
 
         public void GenerateFloor()
         {
-
             // === Add Boss Room === //
             if (floorNo == levelNo)
             {
@@ -133,7 +133,6 @@ namespace GameGeneration
                 AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.all_walls), entranceTile, Cell.CellType.entrance);
                 // TODO - Make sure player is rendered after everything else
             }
-
 
             // === Add Stairs === //
             if (levelNo != 0)
@@ -222,25 +221,16 @@ namespace GameGeneration
 
         private void InstantiateRoom(Cell cell)
         {
-            // Extract the vector
-            Vector3 posVector = cell.vectorPosition;
-
-            // Get x & y for cell
-            int x = Convert.ToInt32(posVector.x);
-            int y = Convert.ToInt32(posVector.y);
-
-            // Get the relevant position to the start X & Y
-            posVector = ConvertToRelevantCoordinate(posVector);
-
             RoomGen roomToGenerate = GetComponent<RoomGen>();
             roomToGenerate.SetupRoom(cell, floor);
         }
+
         public void AddStandardRoom(Vector3 position)
         {
             List<List<Tuple<Vector3, Walls.WallTypes>>> possibleRooms = new List<List<Tuple<Vector3, Walls.WallTypes>>>();
 
             // === Create a Room of Size 3 === //
-            if (current3Rooms < max3Rooms)
+            if (Convert.ToBoolean(rand.Range(0, 2)) && current3Rooms < max3Rooms)
             {
                 possibleRooms.AddRange(Rooms.GetPossibleSize3Rooms(position, rooms, floorWidth, floorHeight));
             }
@@ -282,7 +272,6 @@ namespace GameGeneration
             return;
         }
 
-
         /// <summary>
         /// Add a room at the specified coordinate with the specified tile
         /// </summary>
@@ -323,6 +312,5 @@ namespace GameGeneration
                 }
             }
         }
-
     }
 }
