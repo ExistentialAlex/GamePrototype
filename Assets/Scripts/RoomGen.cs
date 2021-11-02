@@ -50,24 +50,44 @@ namespace GameGeneration
                     {
                         AddLeftWall(x, y, floor);
                         AddTopWall(x, y, floor);
+
+                        if (room.type == Cell.CellType.room)
+                        {
+                            AddWall(maxX, y, floor);
+                        }
                         break;
                     }
                 case (Walls.WallTypes.top_right_corner):
                     {
                         AddRightWall(x, y, floor);
                         AddTopWall(x, y, floor);
+
+                        if (room.type == Cell.CellType.room)
+                        {
+                            AddWall(x, y, floor);
+                        }
                         break;
                     }
                 case (Walls.WallTypes.bottom_left_corner):
                     {
                         AddLeftWall(x, y, floor);
                         AddBottomWall(x, y, floor);
+
+                        if (room.type == Cell.CellType.room)
+                        {
+                            AddWall(maxX, maxY, floor);
+                        }
                         break;
                     }
                 case (Walls.WallTypes.bottom_right_corner):
                     {
                         AddRightWall(x, y, floor);
                         AddBottomWall(x, y, floor);
+
+                        if (room.type == Cell.CellType.room)
+                        {
+                            AddWall(x, maxY, floor);
+                        }
                         break;
                     }
                 case (Walls.WallTypes.horizontal_open):
