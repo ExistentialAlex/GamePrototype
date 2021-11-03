@@ -49,125 +49,189 @@ namespace GameGeneration
             {
                 case (Walls.WallTypes.top_left_corner):
                     {
-                        AddLeftWall(x, y, floor);
-                        AddTopWall(x, y, floor);
-
                         if (room.type == Cell.CellType.room)
                         {
                             AddWall(maxX, y, floor);
                         }
+
+                        AddLeftWall(room, x, y, floor);
+                        AddTopWall(room, x, y, floor);
                         break;
                     }
                 case (Walls.WallTypes.top_right_corner):
                     {
-                        AddRightWall(x, y, floor);
-                        AddTopWall(x, y, floor);
-
                         if (room.type == Cell.CellType.room)
                         {
                             AddWall(x, y, floor);
                         }
+
+                        AddRightWall(room, x, y, floor);
+                        AddTopWall(room, x, y, floor);
                         break;
                     }
                 case (Walls.WallTypes.bottom_left_corner):
                     {
-                        AddLeftWall(x, y, floor);
-                        AddBottomWall(x, y, floor);
-
                         if (room.type == Cell.CellType.room)
                         {
                             AddWall(maxX, maxY, floor);
                         }
+
+                        AddLeftWall(room, x, y, floor);
+                        AddBottomWall(room, x, y, floor);
                         break;
                     }
                 case (Walls.WallTypes.bottom_right_corner):
                     {
-                        AddRightWall(x, y, floor);
-                        AddBottomWall(x, y, floor);
-
                         if (room.type == Cell.CellType.room)
                         {
                             AddWall(x, maxY, floor);
                         }
+
+                        AddRightWall(room, x, y, floor);
+                        AddBottomWall(room, x, y, floor);
                         break;
                     }
                 case (Walls.WallTypes.horizontal_open):
                     {
-                        AddBottomWall(x, y, floor);
-                        AddTopWall(x, y, floor);
+                        AddBottomWall(room, x, y, floor);
+                        AddTopWall(room, x, y, floor);
                         break;
                     }
                 case (Walls.WallTypes.vertical_open):
                     {
-                        AddLeftWall(x, y, floor);
-                        AddRightWall(x, y, floor);
+                        AddLeftWall(room, x, y, floor);
+                        AddRightWall(room, x, y, floor);
                         break;
                     }
                 case (Walls.WallTypes.top_open_side):
                     {
-                        AddLeftWall(x, y, floor);
-                        AddBottomWall(x, y, floor);
-                        AddRightWall(x, y, floor);
+                        AddLeftWall(room, x, y, floor);
+                        AddBottomWall(room, x, y, floor);
+                        AddRightWall(room, x, y, floor);
                         break;
                     }
                 case (Walls.WallTypes.right_open_side):
                     {
-                        AddLeftWall(x, y, floor);
-                        AddBottomWall(x, y, floor);
-                        AddTopWall(x, y, floor);
+                        AddLeftWall(room, x, y, floor);
+                        AddBottomWall(room, x, y, floor);
+                        AddTopWall(room, x, y, floor);
                         break;
                     }
                 case (Walls.WallTypes.bottom_open_side):
                     {
-                        AddLeftWall(x, y, floor);
-                        AddTopWall(x, y, floor);
-                        AddRightWall(x, y, floor);
+                        AddLeftWall(room, x, y, floor);
+                        AddTopWall(room, x, y, floor);
+                        AddRightWall(room, x, y, floor);
                         break;
                     }
                 case (Walls.WallTypes.left_open_side):
                     {
-                        AddBottomWall(x, y, floor);
-                        AddTopWall(x, y, floor);
-                        AddRightWall(x, y, floor);
+                        AddBottomWall(room, x, y, floor);
+                        AddTopWall(room, x, y, floor);
+                        AddRightWall(room, x, y, floor);
                         break;
                     }
                 case (Walls.WallTypes.all_walls):
                     {
-                        AddLeftWall(x, y, floor);
-                        AddTopWall(x, y, floor);
-                        AddRightWall(x, y, floor);
-                        AddBottomWall(x, y, floor);
+                        AddLeftWall(room, x, y, floor);
+                        AddTopWall(room, x, y, floor);
+                        AddRightWall(room, x, y, floor);
+                        AddBottomWall(room, x, y, floor);
                         break;
                     }
             }
         }
 
-        private void AddLeftWall(int x, int y, Transform floor)
+        private int GetHorizontalWallCenter()
         {
+            return Convert.ToInt32(Rooms.roomHeight / 2);
+        }
+
+        private int GetVerticalWallCenter()
+        {
+            return Convert.ToInt32(Rooms.roomWidth / 2);
+        }
+
+        private void AddVerticalDoor(int x, int y, int wallMiddle, Transform floor)
+        {
+            int bottomMostPoint = Convert.ToInt32(wallMiddle - Doors.doorSize / 2);
+
+            for (int i = 0; i < bottomMostPoint; i++)
+            {
+                AddWall(x, i + y, floor);
+            }
+
+            for (int i = bottomMostPoint + Doors.doorSize + 1; i < roomHeight; i++)
+            {
+                AddWall(x, i + y, floor);
+            }
+        }
+
+        private void AddHorizontalDoor(int x, int y, int wallMiddle, Transform floor)
+        {
+            int leftMostPoint = Convert.ToInt32(wallMiddle - Doors.doorSize / 2);
+
+            for (int i = 0; i < leftMostPoint; i++)
+            {
+                AddWall(x, i + y, floor);
+            }
+
+            for (int i = leftMostPoint + Doors.doorSize + 1; i < roomWidth; i++)
+            {
+                AddWall(x + 1, y, floor);
+            }
+        }
+
+        private void AddLeftWall(Cell room, int x, int y, Transform floor)
+        {
+            if (room.doors.Contains(Doors.DoorPositions.left))
+            {
+                AddVerticalDoor(x, y, GetVerticalWallCenter(), floor);
+                return;
+            }
+
             for (int i = 0; i < roomHeight; i++)
             {
                 AddWall(x, i + y, floor); // left wall
             }
         }
 
-        private void AddRightWall(int x, int y, Transform floor)
+        private void AddRightWall(Cell room, int x, int y, Transform floor)
         {
+            if (room.doors.Contains(Doors.DoorPositions.right))
+            {
+                AddVerticalDoor(x, y, GetVerticalWallCenter(), floor);
+                return;
+            }
+
             for (int i = 0; i < roomHeight; i++)
             {
                 AddWall(maxX, i + y, floor); // right wall
             }
         }
 
-        private void AddTopWall(int x, int y, Transform floor)
+        private void AddTopWall(Cell room, int x, int y, Transform floor)
         {
+            if (room.doors.Contains(Doors.DoorPositions.top))
+            {
+                AddHorizontalDoor(x, y, GetHorizontalWallCenter(), floor);
+                return;
+            }
+
             for (int i = 0; i < roomWidth; i++)
             {
                 AddWall(i + x, maxY, floor); // top wall
             }
         }
 
-        private void AddBottomWall(int x, int y, Transform floor)
+        private void AddBottomWall(Cell room, int x, int y, Transform floor)
         {
+            if (room.doors.Contains(Doors.DoorPositions.bottom))
+            {
+                AddHorizontalDoor(x, y, GetHorizontalWallCenter(), floor);
+                return;
+            }
+
             for (int i = 0; i < roomWidth; i++)
             {
                 AddWall(i + x, y, floor); // bottom wall

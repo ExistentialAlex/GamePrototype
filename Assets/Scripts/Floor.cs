@@ -199,6 +199,14 @@ namespace GameGeneration
                     }
                 }
             }
+
+            for (int x = 0; x < floorWidth; x++)
+            {
+                for (int y = 0; y < floorHeight; y++)
+                {
+                    Doors.AddDoor(rooms, x, y, floorWidth - 1, floorHeight - 1);
+                }
+            }
         }
 
         private void AddStair()
