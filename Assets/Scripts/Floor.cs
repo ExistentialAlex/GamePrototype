@@ -204,7 +204,7 @@ namespace GameGeneration
             {
                 for (int y = 0; y < floorHeight; y++)
                 {
-                    Doors.AddDoor(rooms, x, y, floorWidth - 1, floorHeight - 1);
+                    Door.AddDoor(rooms, x, y, floorWidth - 1, floorHeight - 1);
                 }
             }
         }

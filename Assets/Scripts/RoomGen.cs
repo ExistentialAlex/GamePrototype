@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 namespace GameGeneration
 {
@@ -142,51 +143,12 @@ namespace GameGeneration
             }
         }
 
-        private int GetHorizontalWallCenter()
-        {
-            return Convert.ToInt32(Rooms.roomHeight / 2);
-        }
-
-        private int GetVerticalWallCenter()
-        {
-            return Convert.ToInt32(Rooms.roomWidth / 2);
-        }
-
-        private void AddVerticalDoor(int x, int y, int wallMiddle, Transform floor)
-        {
-            int bottomMostPoint = Convert.ToInt32(wallMiddle - Doors.doorSize / 2);
-
-            for (int i = 0; i < bottomMostPoint; i++)
-            {
-                AddWall(x, i + y, floor);
-            }
-
-            for (int i = bottomMostPoint + Doors.doorSize + 1; i < roomHeight; i++)
-            {
-                AddWall(x, i + y, floor);
-            }
-        }
-
-        private void AddHorizontalDoor(int x, int y, int wallMiddle, Transform floor)
-        {
-            int leftMostPoint = Convert.ToInt32(wallMiddle - Doors.doorSize / 2);
-
-            for (int i = 0; i < leftMostPoint; i++)
-            {
-                AddWall(x, i + y, floor);
-            }
-
-            for (int i = leftMostPoint + Doors.doorSize + 1; i < roomWidth; i++)
-            {
-                AddWall(x + 1, y, floor);
-            }
-        }
-
         private void AddLeftWall(Cell room, int x, int y, Transform floor)
         {
-            if (room.doors.Contains(Doors.DoorPositions.left))
+            if (room.doors.Select(Door => Door.position).Contains(Door.DoorPositions.left))
             {
-                AddVerticalDoor(x, y, GetVerticalWallCenter(), floor);
+                Door door = room.doors.Where(door => door.position == Door.DoorPositions.left).First();
+                AddVerticalDoor(door, x, y, GetVerticalWallCenter(), floor);
                 return;
             }
 
@@ -198,9 +160,10 @@ namespace GameGeneration
 
         private void AddRightWall(Cell room, int x, int y, Transform floor)
         {
-            if (room.doors.Contains(Doors.DoorPositions.right))
+            if (room.doors.Select(Door => Door.position).Contains(Door.DoorPositions.right))
             {
-                AddVerticalDoor(x, y, GetVerticalWallCenter(), floor);
+                Door door = room.doors.Where(door => door.position == Door.DoorPositions.right).First();
+                AddVerticalDoor(door, maxX, y, GetVerticalWallCenter(), floor);
                 return;
             }
 
@@ -212,9 +175,10 @@ namespace GameGeneration
 
         private void AddTopWall(Cell room, int x, int y, Transform floor)
         {
-            if (room.doors.Contains(Doors.DoorPositions.top))
+            if (room.doors.Select(Door => Door.position).Contains(Door.DoorPositions.top))
             {
-                AddHorizontalDoor(x, y, GetHorizontalWallCenter(), floor);
+                Door door = room.doors.Where(door => door.position == Door.DoorPositions.top).First();
+                AddHorizontalDoor(door, x, maxY, GetHorizontalWallCenter(), floor);
                 return;
             }
 
@@ -226,9 +190,10 @@ namespace GameGeneration
 
         private void AddBottomWall(Cell room, int x, int y, Transform floor)
         {
-            if (room.doors.Contains(Doors.DoorPositions.bottom))
+            if (room.doors.Select(Door => Door.position).Contains(Door.DoorPositions.bottom))
             {
-                AddHorizontalDoor(x, y, GetHorizontalWallCenter(), floor);
+                Door door = room.doors.Where(door => door.position == Door.DoorPositions.bottom).First();
+                AddHorizontalDoor(door, x, y, GetHorizontalWallCenter(), floor);
                 return;
             }
 
@@ -242,6 +207,50 @@ namespace GameGeneration
         {
             (Instantiate(wall, new Vector3(x, y, 0f), Quaternion.identity) as GameObject).transform.SetParent(floor);
         }
+
+        #region Door
+
+        private int GetHorizontalWallCenter()
+        {
+            return Convert.ToInt32(Rooms.roomWidth / 2);
+        }
+
+        private int GetVerticalWallCenter()
+        {
+            return Convert.ToInt32(Rooms.roomHeight / 2);
+        }
+
+        private void AddVerticalDoor(Door door, int x, int y, int wallMiddle, Transform floor)
+        {
+            int bottomMostPoint = Convert.ToInt32(wallMiddle - door.doorSize / 2);
+
+            for (int i = 0; i < bottomMostPoint; i++)
+            {
+                AddWall(x, i + y, floor);
+            }
+
+            for (int i = bottomMostPoint + door.doorSize + 1; i < roomHeight; i++)
+            {
+                AddWall(x, i + y, floor);
+            }
+        }
+
+        private void AddHorizontalDoor(Door door, int x, int y, int wallMiddle, Transform floor)
+        {
+            int leftMostPoint = Convert.ToInt32(wallMiddle - door.doorSize / 2);
+
+            for (int i = 0; i < leftMostPoint; i++)
+            {
+                AddWall(x + i, y, floor);
+            }
+
+            for (int i = leftMostPoint + door.doorSize + 1; i < roomWidth; i++)
+            {
+                AddWall(x + i, y, floor);
+            }
+        }
+
+        #endregion Door
 
         public void AssignPlayerPosition(int x, int y)
         {

@@ -10,7 +10,7 @@ namespace GameGeneration
     public class Level : MonoBehaviour
     {
         public int noFloors { get; set; }
-        List<Floor> floors { get; set; }
+        private List<Floor> floors { get; set; }
 
         public void SetupLevel(int levelNo, int startX, int startY, int floorWidth, int floorHeight)
         {

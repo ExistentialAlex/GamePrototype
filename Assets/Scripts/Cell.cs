@@ -24,7 +24,7 @@ namespace GameGeneration
         public Walls.WallTypes wallType { get; set; }
         public GameObject tile { get; set; }
 
-        public List<Doors.DoorPositions> doors { get; set; }
+        public List<Door> doors { get; set; }
 
         public Cell(CellType type, Vector3 vectorPosition, Walls.WallTypes wallType, GameObject tile)
         {
@@ -32,7 +32,7 @@ namespace GameGeneration
             this.vectorPosition = vectorPosition;
             this.wallType = wallType;
             this.tile = tile;
-            this.doors = new List<Doors.DoorPositions>();
+            this.doors = new List<Door>();
         }
 
         public override string ToString()
