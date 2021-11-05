@@ -4,17 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using rand = UnityEngine.Random;
+
 namespace GameGeneration
 {
     public class GameGen : MonoBehaviour
     {
         public static GameGen instance = null;	//Static instance of GameManager which allows it to be accessed by any other script.
         public int noOfLevels = 2;
-        public int floorWidth = 5;
-        public int floorHeight = 5;
         public List<Level> levels { get; set; }
 
-        void Awake()
+        private void Awake()
         {
             //Check if instance already exists
             if (instance == null)
@@ -47,18 +46,27 @@ namespace GameGeneration
             levels = new List<Level>();
             int x = 0;
             int y = 0;
+            FloorConfig floorConfig = GetComponent<FloorConfig>();
+            floorConfig.GetDoorConfig();
             for (int i = 0; i < noOfLevels; i++)
             {
-                Level levelToCreate = GetComponent<Level>();
-                levelToCreate.SetupLevel(i, x, y, floorWidth, floorHeight);
+                Level levelToCreate = new Level(i, x, y);
+                levelToCreate.GenerateLevel(floorConfig);
                 levels.Add(levelToCreate);
-                x += (floorWidth * (i + 1)) + (i + 1);
+                // TODO - Add logic to space out floors and levels
+                //x += (floorWidth * (i + 1)) + (i + 1);
             }
+
+            RoomGenerator roomGenerator = GetComponent<RoomGenerator>();
 
             foreach (Level level in levels)
             {
                 // TODO - Setup Logic to only instantiate the level when you've left the previous one
-                level.InstantiateLevel();
+                //level.InstantiateLevel();
+                foreach (Floor floor in level.floors)
+                {
+                    floor.InstantiateFloor(roomGenerator);
+                }
             }
         }
     }

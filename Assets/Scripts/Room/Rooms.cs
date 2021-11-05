@@ -33,7 +33,7 @@ namespace GameGeneration
             vertical
         }
 
-        public static List<Vector3> GetUnpopulatedAdjacentCells(Vector3 position, Cell[,] rooms, int floorWidth, int floorHeight)
+        public static List<Vector3> GetUnpopulatedAdjacentCells(Vector3 position, Room[,] rooms, int floorWidth, int floorHeight)
         {
             List<Vector3> unpopulatedCells = new List<Vector3>();
 
@@ -92,7 +92,7 @@ namespace GameGeneration
         /// <param name="floorWidth">Width of the current floor</param>
         /// <param name="floorHeight">Height of the current floor</param>
         /// <returns></returns>
-        public static List<List<Tuple<Vector3, Walls.WallTypes>>> GetPossibleSize3Rooms(Vector3 position, Cell[,] rooms, int floorWidth, int floorHeight)
+        public static List<List<Tuple<Vector3, Walls.WallTypes>>> GetPossibleSize3Rooms(Vector3 position, Room[,] rooms, int floorWidth, int floorHeight)
         {
             int x = Convert.ToInt32(position.x);
             int y = Convert.ToInt32(position.y);
@@ -190,7 +190,7 @@ namespace GameGeneration
         /// <param name="floorWidth">Width of the current floor</param>
         /// <param name="floorHeight">Height of the current floor</param>
         /// <returns></returns>
-        public static List<List<Tuple<Vector3, Walls.WallTypes>>> GetPossibleSize2Rooms(Vector3 initialPosition, Cell[,] rooms, int floorWidth, int floorHeight)
+        public static List<List<Tuple<Vector3, Walls.WallTypes>>> GetPossibleSize2Rooms(Vector3 initialPosition, Room[,] rooms, int floorWidth, int floorHeight)
         {
             List<List<Tuple<Vector3, Walls.WallTypes>>> possibleRooms = new List<List<Tuple<Vector3, Walls.WallTypes>>>();
             List<Vector3> unpopulatedCells = GetUnpopulatedAdjacentCells(initialPosition, rooms, floorWidth, floorHeight);

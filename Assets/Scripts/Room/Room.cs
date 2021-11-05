@@ -6,7 +6,7 @@ using rand = UnityEngine.Random;
 
 namespace GameGeneration
 {
-    public class Cell
+    public class Room
     {
         public enum CellType
         {
@@ -26,7 +26,7 @@ namespace GameGeneration
 
         public List<Door> doors { get; set; }
 
-        public Cell(CellType type, Vector3 vectorPosition, Walls.WallTypes wallType, GameObject tile)
+        public Room(CellType type, Vector3 vectorPosition, Walls.WallTypes wallType, GameObject tile)
         {
             this.type = type;
             this.vectorPosition = vectorPosition;

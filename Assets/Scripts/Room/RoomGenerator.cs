@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace GameGeneration
 {
-    public class RoomGen : MonoBehaviour
+    public class RoomGenerator : MonoBehaviour
     {
         public int roomWidth = 10;
         public int roomHeight = 10;
@@ -18,7 +18,7 @@ namespace GameGeneration
         private int maxX { get; set; }
         private int maxY { get; set; }
 
-        public void SetupRoom(Cell room, Transform floor)
+        public void SetupRoom(Room room, Transform floor)
         {
             relativeStartX = Convert.ToInt32(roomWidth * room.vectorPosition.x);
             relativeStartY = Convert.ToInt32(roomHeight * room.vectorPosition.y);
@@ -37,20 +37,20 @@ namespace GameGeneration
 
             SetupWalls(room, floor, relativeStartX, relativeStartY);
 
-            if (room.type == Cell.CellType.entrance)
+            if (room.type == Room.CellType.entrance)
             {
                 AssignPlayerPosition(relativeStartX + roomWidth / 2, relativeStartY + roomHeight / 2);
                 InstantiatePlayer(floor);
             }
         }
 
-        private void SetupWalls(Cell room, Transform floor, int x, int y)
+        private void SetupWalls(Room room, Transform floor, int x, int y)
         {
             switch (room.wallType)
             {
                 case (Walls.WallTypes.top_left_corner):
                     {
-                        if (room.type == Cell.CellType.room)
+                        if (room.type == Room.CellType.room)
                         {
                             AddWall(maxX, y, floor);
                         }
@@ -61,7 +61,7 @@ namespace GameGeneration
                     }
                 case (Walls.WallTypes.top_right_corner):
                     {
-                        if (room.type == Cell.CellType.room)
+                        if (room.type == Room.CellType.room)
                         {
                             AddWall(x, y, floor);
                         }
@@ -72,7 +72,7 @@ namespace GameGeneration
                     }
                 case (Walls.WallTypes.bottom_left_corner):
                     {
-                        if (room.type == Cell.CellType.room)
+                        if (room.type == Room.CellType.room)
                         {
                             AddWall(maxX, maxY, floor);
                         }
@@ -83,7 +83,7 @@ namespace GameGeneration
                     }
                 case (Walls.WallTypes.bottom_right_corner):
                     {
-                        if (room.type == Cell.CellType.room)
+                        if (room.type == Room.CellType.room)
                         {
                             AddWall(x, maxY, floor);
                         }
@@ -143,7 +143,7 @@ namespace GameGeneration
             }
         }
 
-        private void AddLeftWall(Cell room, int x, int y, Transform floor)
+        private void AddLeftWall(Room room, int x, int y, Transform floor)
         {
             if (room.doors.Select(Door => Door.position).Contains(Door.DoorPositions.left))
             {
@@ -158,7 +158,7 @@ namespace GameGeneration
             }
         }
 
-        private void AddRightWall(Cell room, int x, int y, Transform floor)
+        private void AddRightWall(Room room, int x, int y, Transform floor)
         {
             if (room.doors.Select(Door => Door.position).Contains(Door.DoorPositions.right))
             {
@@ -173,7 +173,7 @@ namespace GameGeneration
             }
         }
 
-        private void AddTopWall(Cell room, int x, int y, Transform floor)
+        private void AddTopWall(Room room, int x, int y, Transform floor)
         {
             if (room.doors.Select(Door => Door.position).Contains(Door.DoorPositions.top))
             {
@@ -188,7 +188,7 @@ namespace GameGeneration
             }
         }
 
-        private void AddBottomWall(Cell room, int x, int y, Transform floor)
+        private void AddBottomWall(Room room, int x, int y, Transform floor)
         {
             if (room.doors.Select(Door => Door.position).Contains(Door.DoorPositions.bottom))
             {
@@ -229,7 +229,7 @@ namespace GameGeneration
                 AddWall(x, i + y, floor);
             }
 
-            for (int i = bottomMostPoint + door.doorSize + 1; i < roomHeight; i++)
+            for (int i = bottomMostPoint + door.doorSize; i < roomHeight; i++)
             {
                 AddWall(x, i + y, floor);
             }
@@ -244,7 +244,7 @@ namespace GameGeneration
                 AddWall(x + i, y, floor);
             }
 
-            for (int i = leftMostPoint + door.doorSize + 1; i < roomWidth; i++)
+            for (int i = leftMostPoint + door.doorSize; i < roomWidth; i++)
             {
                 AddWall(x + i, y, floor);
             }

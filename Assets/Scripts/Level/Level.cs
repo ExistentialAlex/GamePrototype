@@ -7,21 +7,28 @@ using rand = UnityEngine.Random;
 
 namespace GameGeneration
 {
-    public class Level : MonoBehaviour
+    public class Level
     {
         public int noFloors { get; set; }
-        private List<Floor> floors { get; set; }
+        public List<Floor> floors { get; set; }
+        private int x { get; set; }
+        private int y { get; set; }
 
-        public void SetupLevel(int levelNo, int startX, int startY, int floorWidth, int floorHeight)
+        public Level(int levelNo, int startX, int startY)
         {
             noFloors = levelNo;
             floors = new List<Floor>();
-            GenerateFloors(startX, startY, floorWidth, floorHeight);
+            this.x = startX;
+            this.y = startY;
         }
 
-        public List<Floor> GenerateFloors(int startX, int startY, int floorWidth, int floorHeight)
+        public void GenerateLevel(FloorConfig floorConfig)
         {
-            List<Floor> generatedFloors = new List<Floor>();
+            GenerateFloors(floorConfig, x, y);
+        }
+
+        private void GenerateFloors(FloorConfig floorConfig, int startX, int startY)
+        {
             Debug.Log("=== Generating Floors for Level " + noFloors + " ===");
             int x = startX;
             int y = startY;
@@ -29,14 +36,10 @@ namespace GameGeneration
             {
                 bool includeSecret = Convert.ToBoolean(rand.Range(0, 2));
                 bool includeShop = Convert.ToBoolean(rand.Range(0, 2));
-                Floor floorToCreate = GetComponent<Floor>();
-                floorToCreate.SetupFloor(x, y, floorWidth, floorHeight, i, noFloors, includeShop, includeSecret);
+                Floor floorToCreate = new Floor(floorConfig, x, y, i, noFloors, includeShop, includeSecret);
                 floorToCreate.GenerateFloor();
-                floorToCreate.InstantiateFloor();
-                x += floorWidth + 1;
+                floors.Add(floorToCreate);
             }
-
-            return generatedFloors;
         }
 
         public void InstantiateLevel()
