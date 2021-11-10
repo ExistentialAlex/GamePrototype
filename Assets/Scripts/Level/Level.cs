@@ -14,24 +14,22 @@ namespace GameGeneration
         private int x { get; set; }
         private int y { get; set; }
 
-        public Level(int levelNo, int startX, int startY)
+        public Level(int levelNo)
         {
             noFloors = levelNo;
             floors = new List<Floor>();
-            this.x = startX;
-            this.y = startY;
         }
 
-        public void GenerateLevel(FloorConfig floorConfig)
+        public void GenerateLevel(FloorConfig floorConfig, RoomGenerator roomGenerator)
         {
-            GenerateFloors(floorConfig, x, y);
+            GenerateFloors(floorConfig, roomGenerator);
         }
 
-        private void GenerateFloors(FloorConfig floorConfig, int startX, int startY)
+        private void GenerateFloors(FloorConfig floorConfig, RoomGenerator roomGenerator)
         {
             Debug.Log("=== Generating Floors for Level " + noFloors + " ===");
-            int x = startX;
-            int y = startY;
+            int x = 0;
+            int y = 0;
             for (int i = 0; i <= noFloors; i++)
             {
                 bool includeSecret = Convert.ToBoolean(rand.Range(0, 2));
@@ -39,6 +37,7 @@ namespace GameGeneration
                 Floor floorToCreate = new Floor(floorConfig, x, y, i, noFloors, includeShop, includeSecret);
                 floorToCreate.GenerateFloor();
                 floors.Add(floorToCreate);
+                x = x + (roomGenerator.roomWidth * floorConfig.floorWidth) + 2;
             }
         }
 

@@ -21,6 +21,7 @@ namespace GameGeneration.Player
         private void FixedUpdate()
         {
             moveDelta = Vector3.zero;
+            float playerSpeed = Time.deltaTime * this.playerSpeed;
 
             float x = Input.GetAxisRaw(Convert.ToString(Configuration.InputAxes.Horizontal));
             float y = Input.GetAxisRaw(Convert.ToString(Configuration.InputAxes.Vertical));
@@ -41,25 +42,39 @@ namespace GameGeneration.Player
             // Make sure we can move in the Y direction
             hit = Physics2D.BoxCast(transform.position, boxCollider.size, 0,
                                     new Vector2(0, moveDelta.y),
-                                    Mathf.Abs(moveDelta.y * Time.deltaTime),
-                                    LayerMask.GetMask(Convert.ToString(Configuration.SortingLayers.Units), Convert.ToString(Configuration.SortingLayers.Walls)));
+                                    Mathf.Abs(moveDelta.y * playerSpeed));
 
-            if (hit.collider == null)
+            if (hit.collider == null || hit.transform.gameObject.layer == LayerMask.GetMask(Convert.ToString(Configuration.SortingLayers.Floor)))
             {
                 // Move
-                transform.Translate(0, moveDelta.y * Time.deltaTime * playerSpeed, 0f);
+                transform.Translate(0, moveDelta.y * playerSpeed, 0f);
             }
 
             // Make sure we can move in the X direction
             hit = Physics2D.BoxCast(transform.position, boxCollider.size, 0,
                                     new Vector2(moveDelta.x, 0),
-                                    Mathf.Abs(moveDelta.x * Time.deltaTime),
-                                    LayerMask.GetMask(Convert.ToString(Configuration.SortingLayers.Units), Convert.ToString(Configuration.SortingLayers.Walls)));
+                                    Mathf.Abs(moveDelta.x * playerSpeed));
 
-            if (hit.collider == null)
+            if (hit.collider == null || hit.transform.gameObject.layer == LayerMask.GetMask(Convert.ToString(Configuration.SortingLayers.Floor)))
             {
                 // Move
-                transform.Translate(moveDelta.x * Time.deltaTime * playerSpeed, 0, 0f);
+                transform.Translate(moveDelta.x * playerSpeed, 0, 0f);
+            }
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            switch (collision.tag)
+            {
+                case "Stair":
+                    {
+                        break;
+                    }
+                case "Exit":
+                    {
+                        GameManager.instance.FinishLevel();
+                        break;
+                    }
             }
         }
     }

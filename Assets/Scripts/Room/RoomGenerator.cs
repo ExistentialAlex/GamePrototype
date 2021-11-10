@@ -10,7 +10,6 @@ namespace GameGeneration
     {
         public int roomWidth = 10;
         public int roomHeight = 10;
-        public GameObject player;
         public GameObject wall;
         private Vector3 playerPosition { get; set; }
         private int relativeStartX { get; set; }
@@ -18,10 +17,10 @@ namespace GameGeneration
         private int maxX { get; set; }
         private int maxY { get; set; }
 
-        public void SetupRoom(Room room, Transform floor)
+        public void SetupRoom(Room room, Transform floor, int floorStartX, int floorStartY)
         {
-            relativeStartX = Convert.ToInt32(roomWidth * room.vectorPosition.x);
-            relativeStartY = Convert.ToInt32(roomHeight * room.vectorPosition.y);
+            relativeStartX = Convert.ToInt32(roomWidth * room.vectorPosition.x) + floorStartX;
+            relativeStartY = Convert.ToInt32(roomHeight * room.vectorPosition.y) + floorStartY;
             maxX = relativeStartX + roomWidth - 1;
             maxY = relativeStartY + roomHeight - 1;
 
@@ -259,7 +258,7 @@ namespace GameGeneration
 
         public void InstantiatePlayer(Transform floor)
         {
-            player.transform.position = playerPosition;
+            GameManager.player.transform.position = playerPosition;
         }
     }
 }

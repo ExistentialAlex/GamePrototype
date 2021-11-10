@@ -233,7 +233,6 @@ namespace GameGeneration
 
         public void InstantiateFloor(RoomGenerator roomGenerator)
         {
-            Debug.Log("Instantiating Floor_" + levelNo + "_" + floorNo);
             for (int x = 0; x < floorWidth; x++)
             {
                 for (int y = 0; y < floorHeight; y++)
@@ -243,9 +242,9 @@ namespace GameGeneration
             }
         }
 
-        private void InstantiateRoom(RoomGenerator roomGenerator, Room cell)
+        private void InstantiateRoom(RoomGenerator roomGenerator, Room room)
         {
-            roomGenerator.SetupRoom(cell, floor);
+            roomGenerator.SetupRoom(room, floor, startX, startY);
         }
 
         public void AddStandardRoom(Vector3 position)
