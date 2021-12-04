@@ -64,7 +64,7 @@ namespace GameGeneration
         {
             Debug.Log("=== Setting up Game ===");
             currentLevel = new Level(levelNo);
-            currentLevel.GenerateLevel(floorConfig, roomGenerator);
+            LevelGenerator.GenerateLevel(currentLevel, floorConfig, roomGenerator);
 
             foreach (Floor floor in currentLevel.floors)
             {

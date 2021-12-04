@@ -20,29 +20,32 @@ namespace GameGeneration
             floors = new List<Floor>();
         }
 
-        public void GenerateLevel(FloorConfig floorConfig, RoomGenerator roomGenerator)
+        public void InstantiateLevel()
         {
-            GenerateFloors(floorConfig, roomGenerator);
+        }
+    }
+
+    public static class LevelGenerator
+    {
+        public static void GenerateLevel(Level level, FloorConfig floorConfig, RoomGenerator roomGenerator)
+        {
+            GenerateFloors(level, floorConfig, roomGenerator);
         }
 
-        private void GenerateFloors(FloorConfig floorConfig, RoomGenerator roomGenerator)
+        private static void GenerateFloors(Level level, FloorConfig floorConfig, RoomGenerator roomGenerator)
         {
-            Debug.Log("=== Generating Floors for Level " + noFloors + " ===");
+            Debug.Log("=== Generating Floors for Level " + level.noFloors + " ===");
             int x = 0;
             int y = 0;
-            for (int i = 0; i <= noFloors; i++)
+            for (int i = 0; i <= level.noFloors; i++)
             {
                 bool includeSecret = Convert.ToBoolean(rand.Range(0, 2));
                 bool includeShop = Convert.ToBoolean(rand.Range(0, 2));
-                Floor floorToCreate = new Floor(floorConfig, x, y, i, noFloors, includeShop, includeSecret);
-                floorToCreate.GenerateFloor();
-                floors.Add(floorToCreate);
+                Floor floorToCreate = new Floor(floorConfig, x, y, i, level.noFloors, includeShop, includeSecret);
+                FloorGenerator.GenerateFloor(floorToCreate);
+                level.floors.Add(floorToCreate);
                 x = x + (roomGenerator.roomWidth * floorConfig.floorWidth) + 2;
             }
-        }
-
-        public void InstantiateLevel()
-        {
         }
     }
 }
