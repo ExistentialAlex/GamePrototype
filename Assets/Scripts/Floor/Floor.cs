@@ -132,10 +132,10 @@ namespace GameGeneration
                 int x = rand.Range(0, floorWidth - 1); // will never be last column or row
                 int y = rand.Range(0, floorHeight - 1);
 
-                AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.bottom_left_corner), bossTiles[2], Room.CellType.boss);
-                AddRoom(Tuple.Create(new Vector3(x + 1, y, 0f), Walls.WallTypes.bottom_right_corner), bossTiles[3], Room.CellType.boss);
-                AddRoom(Tuple.Create(new Vector3(x, y + 1, 0f), Walls.WallTypes.top_left_corner), bossTiles[0], Room.CellType.boss);
-                AddRoom(Tuple.Create(new Vector3(x + 1, y + 1, 0f), Walls.WallTypes.top_right_corner), bossTiles[1], Room.CellType.boss);
+                AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.BottomLeftCorner()), bossTiles[2], Room.RoomType.boss);
+                AddRoom(Tuple.Create(new Vector3(x + 1, y, 0f), Walls.BottomRightCorner()), bossTiles[3], Room.RoomType.boss);
+                AddRoom(Tuple.Create(new Vector3(x, y + 1, 0f), Walls.TopLeftCorner()), bossTiles[0], Room.RoomType.boss);
+                AddRoom(Tuple.Create(new Vector3(x + 1, y + 1, 0f), Walls.TopRightCorner()), bossTiles[1], Room.RoomType.boss);
             }
 
             // === Add Entrance === //
@@ -143,8 +143,7 @@ namespace GameGeneration
             {
                 Debug.Log("=== Adding Entrance Room ===");
                 GetRandomEmptyCell(rooms, out int x, out int y);
-                AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.all_walls), entranceTile, Room.CellType.entrance);
-                // TODO - Make sure player is rendered after everything else
+                AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.AllWalls()), entranceTile, Room.RoomType.entrance);
             }
 
             // === Add Stairs === //
@@ -168,7 +167,7 @@ namespace GameGeneration
             {
                 Debug.Log("=== Adding Shop ===");
                 GetRandomEmptyCell(rooms, out int x, out int y);
-                AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.all_walls), shopTiles[0], Room.CellType.shop);
+                AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.AllWalls()), shopTiles[0], Room.RoomType.shop);
             }
 
             // === Add Secrets === //
@@ -176,7 +175,7 @@ namespace GameGeneration
             for (int i = 0; i < noSecrets; i++)
             {
                 GetRandomEmptyCell(rooms, out int x, out int y);
-                AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.all_walls), secretTiles[0], Room.CellType.secret);
+                AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.AllWalls()), secretTiles[0], Room.RoomType.secret);
             }
 
             // === Add Empty Cells === //
@@ -197,7 +196,7 @@ namespace GameGeneration
                     }
                 }
 
-                AddRoom(Tuple.Create(new Vector3(finalX, finalY, 0f), Walls.WallTypes.all_walls), emptyTile, Room.CellType.empty);
+                AddRoom(Tuple.Create(new Vector3(finalX, finalY, 0f), Walls.AllWalls()), emptyTile, Room.RoomType.empty);
             }
 
             // Loop through remaining spaces to place new rooms
@@ -217,8 +216,14 @@ namespace GameGeneration
             {
                 for (int y = 0; y < floorHeight; y++)
                 {
-                    if (rooms[x, y].type != Room.CellType.empty)
+                    if (rooms[x, y].type != Room.RoomType.empty)
                     {
+                        Door.AddDoor(doorConfig, rooms, x, y, floorWidth - 1, floorHeight - 1);
+                    }
+
+                    if (rooms[x, y].type == Room.RoomType.entrance)
+                    {
+                        Door.AddDoor(doorConfig, rooms, x, y, floorWidth - 1, floorHeight - 1);
                         Door.AddDoor(doorConfig, rooms, x, y, floorWidth - 1, floorHeight - 1);
                     }
                 }
@@ -228,7 +233,7 @@ namespace GameGeneration
         private void AddStair()
         {
             GetRandomEmptyCell(rooms, out int x, out int y);
-            AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.all_walls), stairTiles[0], Room.CellType.stair);
+            AddRoom(Tuple.Create(new Vector3(x, y, 0f), Walls.AllWalls()), stairTiles[0], Room.RoomType.stair);
         }
 
         public void InstantiateFloor(RoomGenerator roomGenerator)
@@ -249,7 +254,7 @@ namespace GameGeneration
 
         public void AddStandardRoom(Vector3 position)
         {
-            List<List<Tuple<Vector3, Walls.WallTypes>>> possibleRooms = new List<List<Tuple<Vector3, Walls.WallTypes>>>();
+            List<List<Tuple<Vector3, List<Walls.WallTypes>>>> possibleRooms = new List<List<Tuple<Vector3, List<Walls.WallTypes>>>>();
 
             // === Create a Room of Size 3 === //
             if (Convert.ToBoolean(rand.Range(0, 2)) && current3Rooms < max3Rooms)
@@ -261,10 +266,10 @@ namespace GameGeneration
             {
                 // Pick a random room from our list of possible rooms
                 int randomNo = rand.Range(0, possibleRooms.Count - 1);
-                List<Tuple<Vector3, Walls.WallTypes>> chosenRoom = possibleRooms[randomNo];
-                foreach (Tuple<Vector3, Walls.WallTypes> pos in chosenRoom)
+                List<Tuple<Vector3, List<Walls.WallTypes>>> chosenRoom = possibleRooms[randomNo];
+                foreach (Tuple<Vector3, List<Walls.WallTypes>> pos in chosenRoom)
                 {
-                    AddRoom(pos, floorTiles[2], Room.CellType.room);
+                    AddRoom(pos, floorTiles[2], Room.RoomType.room);
                 }
 
                 // Increment the number of size 3 rooms
@@ -280,17 +285,17 @@ namespace GameGeneration
             {
                 // Pick a random room from our list of possible rooms
                 int randomNo = rand.Range(0, possibleRooms.Count - 1);
-                List<Tuple<Vector3, Walls.WallTypes>> chosenRoom = possibleRooms[randomNo];
-                foreach (Tuple<Vector3, Walls.WallTypes> pos in chosenRoom)
+                List<Tuple<Vector3, List<Walls.WallTypes>>> chosenRoom = possibleRooms[randomNo];
+                foreach (Tuple<Vector3, List<Walls.WallTypes>> pos in chosenRoom)
                 {
-                    AddRoom(pos, floorTiles[1], Room.CellType.room);
+                    AddRoom(pos, floorTiles[1], Room.RoomType.room);
                 }
 
                 return;
             }
 
             // === Create a standard room === //
-            AddRoom(Tuple.Create(position, Walls.WallTypes.all_walls), floorTiles[0], Room.CellType.room);
+            AddRoom(Tuple.Create(position, Walls.AllWalls()), floorTiles[0], Room.RoomType.room);
             return;
         }
 
@@ -300,7 +305,7 @@ namespace GameGeneration
         /// <param name="position">Tuple of Vector3 and WallType to determine how to add walls</param>
         /// <param name="toInstantiate"></param>
         /// <param name="cellType"></param>
-        public void AddRoom(Tuple<Vector3, Walls.WallTypes> position, GameObject toInstantiate, Room.CellType cellType)
+        public void AddRoom(Tuple<Vector3, List<Walls.WallTypes>> position, GameObject toInstantiate, Room.RoomType cellType)
         {
             // Get x & y for cell
             int x = Convert.ToInt32(position.Item1.x);

@@ -36,7 +36,7 @@ namespace GameGeneration
 
             SetupWalls(room, floor, relativeStartX, relativeStartY);
 
-            if (room.type == Room.CellType.entrance)
+            if (room.type == Room.RoomType.entrance)
             {
                 AssignPlayerPosition(relativeStartX + roomWidth / 2, relativeStartY + roomHeight / 2);
                 InstantiatePlayer(floor);
@@ -45,100 +45,51 @@ namespace GameGeneration
 
         private void SetupWalls(Room room, Transform floor, int x, int y)
         {
-            switch (room.wallType)
+            foreach (Walls.WallTypes wall in room.walls)
             {
-                case (Walls.WallTypes.top_left_corner):
-                    {
-                        if (room.type == Room.CellType.room)
+                switch (wall)
+                {
+                    case Walls.WallTypes.top:
                         {
-                            AddWall(maxX, y, floor);
+                            AddTopWall(room, x, y, floor);
+                            break;
                         }
-
-                        AddLeftWall(room, x, y, floor);
-                        AddTopWall(room, x, y, floor);
-                        break;
-                    }
-                case (Walls.WallTypes.top_right_corner):
-                    {
-                        if (room.type == Room.CellType.room)
+                    case Walls.WallTypes.left:
                         {
-                            AddWall(x, y, floor);
+                            AddLeftWall(room, x, y, floor);
+                            break;
                         }
-
-                        AddRightWall(room, x, y, floor);
-                        AddTopWall(room, x, y, floor);
-                        break;
-                    }
-                case (Walls.WallTypes.bottom_left_corner):
-                    {
-                        if (room.type == Room.CellType.room)
+                    case Walls.WallTypes.right:
                         {
-                            AddWall(maxX, maxY, floor);
+                            AddRightWall(room, x, y, floor);
+                            break;
                         }
-
-                        AddLeftWall(room, x, y, floor);
-                        AddBottomWall(room, x, y, floor);
-                        break;
-                    }
-                case (Walls.WallTypes.bottom_right_corner):
-                    {
-                        if (room.type == Room.CellType.room)
+                    case Walls.WallTypes.bottom:
+                        {
+                            AddBottomWall(room, x, y, floor);
+                            break;
+                        }
+                    case Walls.WallTypes.extra_top_left:
                         {
                             AddWall(x, maxY, floor);
+                            break;
                         }
-
-                        AddRightWall(room, x, y, floor);
-                        AddBottomWall(room, x, y, floor);
-                        break;
-                    }
-                case (Walls.WallTypes.horizontal_open):
-                    {
-                        AddBottomWall(room, x, y, floor);
-                        AddTopWall(room, x, y, floor);
-                        break;
-                    }
-                case (Walls.WallTypes.vertical_open):
-                    {
-                        AddLeftWall(room, x, y, floor);
-                        AddRightWall(room, x, y, floor);
-                        break;
-                    }
-                case (Walls.WallTypes.top_open_side):
-                    {
-                        AddLeftWall(room, x, y, floor);
-                        AddBottomWall(room, x, y, floor);
-                        AddRightWall(room, x, y, floor);
-                        break;
-                    }
-                case (Walls.WallTypes.right_open_side):
-                    {
-                        AddLeftWall(room, x, y, floor);
-                        AddBottomWall(room, x, y, floor);
-                        AddTopWall(room, x, y, floor);
-                        break;
-                    }
-                case (Walls.WallTypes.bottom_open_side):
-                    {
-                        AddLeftWall(room, x, y, floor);
-                        AddTopWall(room, x, y, floor);
-                        AddRightWall(room, x, y, floor);
-                        break;
-                    }
-                case (Walls.WallTypes.left_open_side):
-                    {
-                        AddBottomWall(room, x, y, floor);
-                        AddTopWall(room, x, y, floor);
-                        AddRightWall(room, x, y, floor);
-                        break;
-                    }
-                case (Walls.WallTypes.all_walls):
-                    {
-                        AddLeftWall(room, x, y, floor);
-                        AddTopWall(room, x, y, floor);
-                        AddRightWall(room, x, y, floor);
-                        AddBottomWall(room, x, y, floor);
-                        break;
-                    }
+                    case Walls.WallTypes.extra_top_right:
+                        {
+                            AddWall(maxX, maxY, floor);
+                            break;
+                        }
+                    case Walls.WallTypes.extra_bottom_left:
+                        {
+                            AddWall(x, y, floor);
+                            break;
+                        }
+                    case Walls.WallTypes.extra_bottom_right:
+                        {
+                            AddWall(maxX, y, floor);
+                            break;
+                        }
+                }
             }
         }
 

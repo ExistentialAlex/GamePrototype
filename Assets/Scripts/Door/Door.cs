@@ -52,7 +52,7 @@ namespace GameGeneration
             {
                 case DoorPositions.top:
                     {
-                        if (CheckTopDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
+                        if (!CheckTopDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
                         {
                             AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries + 1);
                             break;
@@ -67,7 +67,7 @@ namespace GameGeneration
                     }
                 case DoorPositions.left:
                     {
-                        if (CheckLeftDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
+                        if (!CheckLeftDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
                         {
                             AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries + 1);
                             break;
@@ -82,7 +82,7 @@ namespace GameGeneration
                     }
                 case DoorPositions.right:
                     {
-                        if (CheckRightDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
+                        if (!CheckRightDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
                         {
                             AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries + 1);
                             break;
@@ -97,7 +97,7 @@ namespace GameGeneration
                     }
                 case DoorPositions.bottom:
                     {
-                        if (CheckBottomDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
+                        if (!CheckBottomDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
                         {
                             AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries + 1);
                             break;
@@ -113,31 +113,85 @@ namespace GameGeneration
             }
         }
 
+        /// <summary>
+        /// Check the generic constraints that apply to all rooms
+        /// </summary>
+        /// <param name="room">The current room</param>
+        /// <param name="adjacentRoom">The room on the other side of the door</param>
+        /// <returns></returns>
         public static bool CheckGenericConstraints(Room room, Room adjacentRoom)
         {
-            return adjacentRoom.type == Room.CellType.empty ||
-                   (room.type == Room.CellType.entrance && adjacentRoom.type == Room.CellType.boss) ||
-                   (room.type == Room.CellType.boss && adjacentRoom.type == Room.CellType.entrance);
+            return adjacentRoom.type != Room.RoomType.empty &&
+                   !(room.type == Room.RoomType.entrance && adjacentRoom.type == Room.RoomType.boss) &&
+                   !(room.type == Room.RoomType.boss && adjacentRoom.type == Room.RoomType.entrance);
         }
 
+        /// <summary>
+        /// Check the constraints for placing a door at the top of a room.
+        /// </summary>
+        /// <param name="room">The room in question</param>
+        /// <param name="rooms">All the rooms</param>
+        /// <param name="roomX">X position of the room</param>
+        /// <param name="roomY">Y position of the room</param>
+        /// <param name="maxX">Maximum possible X position</param>
+        /// <param name="maxY">Maximum possible Y position</param>
+        /// <returns>True if all constraints are met</returns>
         public static bool CheckTopDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
         {
-            return room.vectorPosition.y == maxY || CheckGenericConstraints(room, rooms[roomX, roomY + 1]);
+            return room.vectorPosition.y < maxY &&
+                   CheckGenericConstraints(room, rooms[roomX, roomY + 1]) &&
+                   room.walls.Contains(Walls.WallTypes.top);
         }
 
+        /// <summary>
+        /// Check the constraints for placing a door at the left of a room.
+        /// </summary>
+        /// <param name="room">The room in question</param>
+        /// <param name="rooms">All the rooms</param>
+        /// <param name="roomX">X position of the room</param>
+        /// <param name="roomY">Y position of the room</param>
+        /// <param name="maxX">Maximum possible X position</param>
+        /// <param name="maxY">Maximum possible Y position</param>
+        /// <returns>True if all constraints are met</returns>
         public static bool CheckLeftDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
         {
-            return room.vectorPosition.x == 0 || CheckGenericConstraints(room, rooms[roomX - 1, roomY]);
+            return room.vectorPosition.x > 0 &&
+                   CheckGenericConstraints(room, rooms[roomX - 1, roomY]) &&
+                   room.walls.Contains(Walls.WallTypes.left);
         }
 
+        /// <summary>
+        /// Check the constraints for placing a door at the right of a room.
+        /// </summary>
+        /// <param name="room">The room in question</param>
+        /// <param name="rooms">All the rooms</param>
+        /// <param name="roomX">X position of the room</param>
+        /// <param name="roomY">Y position of the room</param>
+        /// <param name="maxX">Maximum possible X position</param>
+        /// <param name="maxY">Maximum possible Y position</param>
+        /// <returns>True if all constraints are met</returns>
         public static bool CheckRightDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
         {
-            return room.vectorPosition.x == maxX || CheckGenericConstraints(room, rooms[roomX + 1, roomY]);
+            return room.vectorPosition.x < maxX &&
+                   CheckGenericConstraints(room, rooms[roomX + 1, roomY]) &&
+                   room.walls.Contains(Walls.WallTypes.right);
         }
 
+        /// <summary>
+        /// Check the constraints for placing a door at the bottom of a room.
+        /// </summary>
+        /// <param name="room">The room in question</param>
+        /// <param name="rooms">All the rooms</param>
+        /// <param name="roomX">X position of the room</param>
+        /// <param name="roomY">Y position of the room</param>
+        /// <param name="maxX">Maximum possible X position</param>
+        /// <param name="maxY">Maximum possible Y position</param>
+        /// <returns>True if all constraints are met</returns>
         public static bool CheckBottomDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
         {
-            return room.vectorPosition.y == 0 || CheckGenericConstraints(room, rooms[roomX, roomY - 1]);
+            return room.vectorPosition.y > 0 &&
+                   CheckGenericConstraints(room, rooms[roomX, roomY - 1]) &&
+                   room.walls.Contains(Walls.WallTypes.bottom);
         }
     }
 }

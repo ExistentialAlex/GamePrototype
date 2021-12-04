@@ -9,6 +9,7 @@ namespace GameGeneration
     {
         public const int roomWidth = 10;
         public const int roomHeight = 10;
+
         public enum Size3Shapes
         {
             // [ ][ ]
@@ -16,7 +17,7 @@ namespace GameGeneration
             up_left,
 
             // [ ][ ]
-            // [ ] 
+            // [ ]
             up_right,
 
             // [ ]
@@ -27,6 +28,7 @@ namespace GameGeneration
             // [ ][ ]
             right_up
         }
+
         public enum Size2Shapes
         {
             horizontal,
@@ -83,8 +85,8 @@ namespace GameGeneration
         }
 
         /// <summary>
-        /// Generates rooms of size 3, from bottom left most position. 
-        /// Excluded are rooms that can't be generated based on cell parse order 
+        /// Generates rooms of size 3, from bottom left most position.
+        /// Excluded are rooms that can't be generated based on cell parse order
         /// (empty rooms to left or below position)
         /// </summary>
         /// <param name="position">Starting position from which to check</param>
@@ -92,62 +94,59 @@ namespace GameGeneration
         /// <param name="floorWidth">Width of the current floor</param>
         /// <param name="floorHeight">Height of the current floor</param>
         /// <returns></returns>
-        public static List<List<Tuple<Vector3, Walls.WallTypes>>> GetPossibleSize3Rooms(Vector3 position, Room[,] rooms, int floorWidth, int floorHeight)
+        public static List<List<Tuple<Vector3, List<Walls.WallTypes>>>> GetPossibleSize3Rooms(Vector3 position, Room[,] rooms, int floorWidth, int floorHeight)
         {
             int x = Convert.ToInt32(position.x);
             int y = Convert.ToInt32(position.y);
 
-            List<List<Tuple<Vector3, Walls.WallTypes>>> possibleRooms = new List<List<Tuple<Vector3, Walls.WallTypes>>>();
+            List<List<Tuple<Vector3, List<Walls.WallTypes>>>> possibleRooms = new List<List<Tuple<Vector3, List<Walls.WallTypes>>>>();
 
             // Room of shape
             // [ ][ ]
-            // [s] 
+            // [s]
 
             if (x < floorWidth - 1 && y < floorHeight - 1 && rooms[x, y + 1] == null && rooms[x + 1, y + 1] == null)
             {
-                possibleRooms.Add(new List<Tuple<Vector3, Walls.WallTypes>>(){
-                        Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.top_open_side),
-                        Tuple.Create(new Vector3(x, y + 1, 0f), Walls.WallTypes.top_left_corner),
-                        Tuple.Create(new Vector3(x + 1, y + 1, 0f), Walls.WallTypes.left_open_side),
+                possibleRooms.Add(new List<Tuple<Vector3, List<Walls.WallTypes>>>(){
+                        Tuple.Create(new Vector3(x, y, 0f), Walls.TopOpenSide()),
+                        Tuple.Create(new Vector3(x, y + 1, 0f), Walls.TopLeftCorner()),
+                        Tuple.Create(new Vector3(x + 1, y + 1, 0f), Walls.LeftOpenSide()),
                     });
             }
 
             // Room of shape
             // [s][ ]
             //    [ ]
-
             else if (x < floorWidth - 1 && y > 0 && rooms[x + 1, y] == null && rooms[x + 1, y - 1] == null)
             {
-                possibleRooms.Add(new List<Tuple<Vector3, Walls.WallTypes>>(){
-                        Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.right_open_side),
-                        Tuple.Create(new Vector3(x + 1, y, 0f), Walls.WallTypes.top_right_corner),
-                        Tuple.Create(new Vector3(x + 1, y - 1, 0f), Walls.WallTypes.top_open_side),
+                possibleRooms.Add(new List<Tuple<Vector3, List<Walls.WallTypes>>>(){
+                        Tuple.Create(new Vector3(x, y, 0f), Walls.RightOpenSide()),
+                        Tuple.Create(new Vector3(x + 1, y, 0f), Walls.TopRightCorner()),
+                        Tuple.Create(new Vector3(x + 1, y - 1, 0f), Walls.TopOpenSide()),
                     });
             }
 
             // Room of shape
             //    [ ]
-            // [s][ ] 
-
+            // [s][ ]
             else if (x < floorWidth - 1 && y < floorHeight - 1 && rooms[x + 1, y] == null && rooms[x + 1, y + 1] == null)
             {
-                possibleRooms.Add(new List<Tuple<Vector3, Walls.WallTypes>>(){
-                        Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.right_open_side),
-                        Tuple.Create(new Vector3(x + 1, y, 0f), Walls.WallTypes.bottom_right_corner),
-                        Tuple.Create(new Vector3(x + 1, y + 1, 0f), Walls.WallTypes.bottom_open_side),
+                possibleRooms.Add(new List<Tuple<Vector3, List<Walls.WallTypes>>>(){
+                        Tuple.Create(new Vector3(x, y, 0f), Walls.RightOpenSide()),
+                        Tuple.Create(new Vector3(x + 1, y, 0f), Walls.BottomRightCorner()),
+                        Tuple.Create(new Vector3(x + 1, y + 1, 0f), Walls.BottomOpenSide()),
                     });
             }
 
             // Room of shape
             // [ ]
             // [s][ ]
-
             else if (x < floorWidth - 1 && y < floorHeight - 1 && rooms[x, y + 1] == null && rooms[x + 1, y] == null)
             {
-                possibleRooms.Add(new List<Tuple<Vector3, Walls.WallTypes>>(){
-                        Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.bottom_left_corner),
-                        Tuple.Create(new Vector3(x, y + 1, 0f), Walls.WallTypes.bottom_open_side),
-                        Tuple.Create(new Vector3(x + 1, y, 0f), Walls.WallTypes.left_open_side),
+                possibleRooms.Add(new List<Tuple<Vector3, List<Walls.WallTypes>>>(){
+                        Tuple.Create(new Vector3(x, y, 0f), Walls.BottomLeftCorner()),
+                        Tuple.Create(new Vector3(x, y + 1, 0f), Walls.BottomOpenSide()),
+                        Tuple.Create(new Vector3(x + 1, y, 0f), Walls.LeftOpenSide()),
                     });
             }
 
@@ -155,25 +154,23 @@ namespace GameGeneration
             // [ ]
             // [ ]
             // [s]
-
             else if (y < floorHeight - 2 && rooms[x, y + 1] == null && rooms[x, y + 2] == null)
             {
-                possibleRooms.Add(new List<Tuple<Vector3, Walls.WallTypes>>(){
-                        Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.top_open_side),
-                        Tuple.Create(new Vector3(x, y + 1, 0f), Walls.WallTypes.vertical_open),
-                        Tuple.Create(new Vector3(x, y + 2, 0f), Walls.WallTypes.bottom_open_side),
+                possibleRooms.Add(new List<Tuple<Vector3, List<Walls.WallTypes>>>(){
+                        Tuple.Create(new Vector3(x, y, 0f), Walls.TopOpenSide()),
+                        Tuple.Create(new Vector3(x, y + 1, 0f), Walls.VerticalOpen()),
+                        Tuple.Create(new Vector3(x, y + 2, 0f), Walls.BottomOpenSide()),
                     });
             }
 
-            // Room of shape 
+            // Room of shape
             // [s][ ][ ]
-
             else if (x < floorWidth - 2 && rooms[x + 1, y] == null && rooms[x + 2, y] == null)
             {
-                possibleRooms.Add(new List<Tuple<Vector3, Walls.WallTypes>>(){
-                        Tuple.Create(new Vector3(x, y, 0f), Walls.WallTypes.right_open_side),
-                        Tuple.Create(new Vector3(x + 1, y, 0f), Walls.WallTypes.horizontal_open),
-                        Tuple.Create(new Vector3(x + 2, y, 0f), Walls.WallTypes.left_open_side),
+                possibleRooms.Add(new List<Tuple<Vector3, List<Walls.WallTypes>>>(){
+                        Tuple.Create(new Vector3(x, y, 0f), Walls.RightOpenSide()),
+                        Tuple.Create(new Vector3(x + 1, y, 0f), Walls.HorizontalOpen()),
+                        Tuple.Create(new Vector3(x + 2, y, 0f), Walls.LeftOpenSide()),
                     });
             }
 
@@ -181,8 +178,8 @@ namespace GameGeneration
         }
 
         /// <summary>
-        /// Generates rooms of size 2, from bottom left most position. 
-        /// Excluded are rooms that can't be generated based on cell parse order 
+        /// Generates rooms of size 2, from bottom left most position.
+        /// Excluded are rooms that can't be generated based on cell parse order
         /// (empty rooms to left or below position)
         /// </summary>
         /// <param name="initialPosition">Starting position from which to check</param>
@@ -190,9 +187,9 @@ namespace GameGeneration
         /// <param name="floorWidth">Width of the current floor</param>
         /// <param name="floorHeight">Height of the current floor</param>
         /// <returns></returns>
-        public static List<List<Tuple<Vector3, Walls.WallTypes>>> GetPossibleSize2Rooms(Vector3 initialPosition, Room[,] rooms, int floorWidth, int floorHeight)
+        public static List<List<Tuple<Vector3, List<Walls.WallTypes>>>> GetPossibleSize2Rooms(Vector3 initialPosition, Room[,] rooms, int floorWidth, int floorHeight)
         {
-            List<List<Tuple<Vector3, Walls.WallTypes>>> possibleRooms = new List<List<Tuple<Vector3, Walls.WallTypes>>>();
+            List<List<Tuple<Vector3, List<Walls.WallTypes>>>> possibleRooms = new List<List<Tuple<Vector3, List<Walls.WallTypes>>>>();
             List<Vector3> unpopulatedCells = GetUnpopulatedAdjacentCells(initialPosition, rooms, floorWidth, floorHeight);
 
             foreach (Vector3 pos in unpopulatedCells)
@@ -202,25 +199,24 @@ namespace GameGeneration
                 // [s]
                 if (pos.x == initialPosition.x && pos.y == (initialPosition.y + 1))
                 {
-                    possibleRooms.Add(new List<Tuple<Vector3, Walls.WallTypes>> {
-                        Tuple.Create(initialPosition, Walls.WallTypes.top_open_side),
-                        Tuple.Create(pos, Walls.WallTypes.bottom_open_side)
+                    possibleRooms.Add(new List<Tuple<Vector3, List<Walls.WallTypes>>> {
+                        Tuple.Create(initialPosition, Walls.TopOpenSide()),
+                        Tuple.Create(pos, Walls.BottomOpenSide())
                     });
                 }
                 // Room of shape
                 // [s][ ]
                 if (pos.x == (initialPosition.x + 1) && pos.y == initialPosition.y)
                 {
-                    possibleRooms.Add(new List<Tuple<Vector3, Walls.WallTypes>> {
-                        Tuple.Create(initialPosition, Walls.WallTypes.right_open_side),
-                        Tuple.Create(pos, Walls.WallTypes.left_open_side)
+                    possibleRooms.Add(new List<Tuple<Vector3, List<Walls.WallTypes>>> {
+                        Tuple.Create(initialPosition, Walls.RightOpenSide()),
+                        Tuple.Create(pos, Walls.LeftOpenSide())
                     });
                 }
             }
 
             return possibleRooms;
         }
-
 
         public static readonly string[,] size2_standard_h = new string[roomWidth * 2, roomHeight]{{"F","F","F","F","F","F","F","F","F","F"},
                                                                                                      {"F","F","F","F","F","F","F","F","F","F"},
@@ -254,7 +250,6 @@ namespace GameGeneration
                                                                                                      {"F","F","F","F","F","F","F","F","F","F",/*       */"F","F","F","F","F","F","F","F","F","F"},
                                                                                                      {"F","F","F","F","F","F","F","F","F","F",/*       */"F","F","F","F","F","F","F","F","F","F"},
                                                                                                      {"F","F","F","F","F","F","F","F","F","F",/*       */"F","F","F","F","F","F","F","F","F","F"}};
-
 
         public static readonly string[,] size1_standard = new string[roomWidth, roomHeight]{{"F","F","F","F","F","F","F","F","F","F"},
                                                                                             {"F","F","F","F","F","F","F","F","F","F"},
