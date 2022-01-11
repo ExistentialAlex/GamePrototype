@@ -31,5 +31,8 @@ namespace GameGeneration
             Horizontal,
             Vertical
         }
+
+        public const string COMPONENT_TAGS_STAIR = "Stair";
+        public const string COMPONENT_TAGS_EXIT = "Exit";
     }
 }

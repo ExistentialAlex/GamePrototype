@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-namespace GameGeneration
+namespace GameGeneration.Rooms
 {
     public class RoomGenerator : MonoBehaviour
     {
@@ -210,6 +210,7 @@ namespace GameGeneration
         public void InstantiatePlayer(Transform floor)
         {
             GameManager.player.transform.position = playerPosition;
+            GameManager.instance.playerReady = true;
         }
     }
 }

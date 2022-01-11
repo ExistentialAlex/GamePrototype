@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using GameGeneration;
 using System;
+using GameGeneration.Rooms;
+using System.Linq;
 
 namespace GameGeneration.Player
 {
@@ -11,13 +13,17 @@ namespace GameGeneration.Player
         private BoxCollider2D boxCollider;
         private Vector3 moveDelta;
         private RaycastHit2D hit;
-        public float playerSpeed = 1;
+        public float playerSpeed = 3; // Baseline player speed
+        private Room roomToMoveTo;
 
         private void Start()
         {
             boxCollider = GetComponent<BoxCollider2D>();
         }
 
+        /// <summary>
+        /// Takes user input on the player, calculates if the player can move in that direction and moves sprite.
+        /// </summary>
         private void FixedUpdate()
         {
             moveDelta = Vector3.zero;
@@ -66,16 +72,42 @@ namespace GameGeneration.Player
         {
             switch (collision.tag)
             {
-                case "Stair":
+                case Configuration.COMPONENT_TAGS_STAIR:
                     {
+                        StartCoroutine(MovePlayerToLinkedStair(collision.gameObject, 5));
                         break;
                     }
-                case "Exit":
+                case Configuration.COMPONENT_TAGS_EXIT:
                     {
-                        GameManager.instance.FinishLevel();
+                        // Invoke the method 'LoadNextLevel' with a 1 second delay
+                        Invoke(nameof(LoadNextLevel), 1);
                         break;
                     }
             }
+        }
+
+        private IEnumerator MovePlayerToLinkedStair(GameObject tileHit, float delay)
+        {
+            // Delay for a number of seconds
+            yield return new WaitForSeconds(delay);
+
+            Vector3 tilePosition = tileHit.transform.position;
+
+            //StairRoom currentStair = GameManager.instance.currentLevel.floors.Where(floor => floor.stairs.Where(stair => stair.vectorPosition))
+        }
+
+        /// <summary>
+        /// Load the next level in the game
+        /// </summary>
+        private void LoadNextLevel()
+        {
+            // By checking if the player is active, we can stop the level from re-loading multiple times.
+            if (!GameManager.instance.playerReady)
+            {
+                return;
+            }
+
+            GameManager.instance.FinishLevel();
         }
     }
 }

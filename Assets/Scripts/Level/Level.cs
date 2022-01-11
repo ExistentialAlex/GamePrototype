@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using rand = UnityEngine.Random;
+using GameGeneration.Rooms;
 
 namespace GameGeneration
 {
@@ -30,6 +31,7 @@ namespace GameGeneration
         public static void GenerateLevel(Level level, FloorConfig floorConfig, RoomGenerator roomGenerator)
         {
             GenerateFloors(level, floorConfig, roomGenerator);
+            LinkStairs(level);
         }
 
         private static void GenerateFloors(Level level, FloorConfig floorConfig, RoomGenerator roomGenerator)
@@ -45,6 +47,35 @@ namespace GameGeneration
                 FloorGenerator.GenerateFloor(floorToCreate);
                 level.floors.Add(floorToCreate);
                 x = x + (roomGenerator.roomWidth * floorConfig.floorWidth) + 2;
+            }
+        }
+
+        /// <summary>
+        /// Links the stairs between floors together
+        /// </summary>
+        /// <param name="level"></param>
+        private static void LinkStairs(Level level)
+        {
+            if (level.floors.Count < 2)
+            {
+                // We don't need to link stairs if there's less than 2 floors.
+                return;
+            }
+
+            List<StairRoom> stairs = new List<StairRoom>();
+
+            foreach (Floor floor in level.floors)
+            {
+                stairs.AddRange(floor.stairs);
+            }
+
+            for (int i = 0; i < stairs.Count - 1; i++)
+            {
+                StairRoom stair1 = stairs[i];
+                StairRoom stair2 = stairs[i + 1];
+
+                stair1.stairPair = stair2;
+                stair2.stairPair = stair1;
             }
         }
     }

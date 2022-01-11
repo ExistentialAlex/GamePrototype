@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using rand = UnityEngine.Random;
+using GameGeneration.Rooms;
 
 namespace GameGeneration
 {
@@ -13,11 +10,19 @@ namespace GameGeneration
         public static GameObject player = null;
         public GameObject playerPrefab;
         public int noOfLevels = 2;
-        private Level currentLevel { get; set; }
+
+        [HideInInspector]
+        public Level currentLevel { get; set; }
+
         private int levelNo { get; set; }
         private FloorConfig floorConfig;
         private RoomGenerator roomGenerator;
+        public bool playerReady { get; set; }
 
+        /// <summary>
+        /// Called when the game is started.
+        /// Will create a new instance of the game manager that is used to manage state throughout the game.
+        /// </summary>
         private void Awake()
         {
             //Check if instance already exists
@@ -49,17 +54,20 @@ namespace GameGeneration
             instance.SetupGame();
         }
 
-        // static private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
-        // {
-        // }
-
+        /// <summary>
+        /// Increments the level number and loads the next level.
+        /// </summary>
         public void FinishLevel()
         {
             Debug.Log($"Level {levelNo} finished, loading next level");
             levelNo++;
+            instance.playerReady = false;
             SceneManager.LoadScene(0);
         }
 
+        /// <summary>
+        /// Set up the game based on the current level number.
+        /// </summary>
         public void SetupGame()
         {
             Debug.Log("=== Setting up Game ===");

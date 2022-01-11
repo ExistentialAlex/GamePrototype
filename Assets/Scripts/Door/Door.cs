@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using rand = UnityEngine.Random;
 using System;
+using GameGeneration.Rooms;
 
 namespace GameGeneration
 {

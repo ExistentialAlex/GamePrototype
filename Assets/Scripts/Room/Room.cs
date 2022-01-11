@@ -2,9 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using rand = UnityEngine.Random;
 
-namespace GameGeneration
+namespace GameGeneration.Rooms
 {
     public class Room
     {
@@ -19,16 +18,15 @@ namespace GameGeneration
             secret
         }
 
-        public RoomType type { get; }
+        public RoomType type { get; set; }
         public Vector3 vectorPosition { get; set; }
         public List<Walls.WallTypes> walls { get; set; }
         public GameObject tile { get; set; }
 
         public List<Door> doors { get; set; }
 
-        public Room(RoomType type, Vector3 vectorPosition, List<Walls.WallTypes> walls, GameObject tile)
+        public Room(Vector3 vectorPosition, List<Walls.WallTypes> walls, GameObject tile)
         {
-            this.type = type;
             this.vectorPosition = vectorPosition;
             this.walls = walls;
             this.tile = tile;
