@@ -31,7 +31,7 @@ namespace GameGeneration
         public static void GenerateLevel(Level level, FloorConfig floorConfig, RoomGenerator roomGenerator)
         {
             GenerateFloors(level, floorConfig, roomGenerator);
-            LinkStairs(level);
+            LinkStairs(level, floorConfig);
         }
 
         private static void GenerateFloors(Level level, FloorConfig floorConfig, RoomGenerator roomGenerator)
@@ -54,7 +54,7 @@ namespace GameGeneration
         /// Links the stairs between floors together
         /// </summary>
         /// <param name="level"></param>
-        private static void LinkStairs(Level level)
+        private static void LinkStairs(Level level, FloorConfig floorConfig)
         {
             if (level.floors.Count < 2)
             {
@@ -69,10 +69,12 @@ namespace GameGeneration
                 stairs.AddRange(floor.stairs);
             }
 
-            for (int i = 0; i < stairs.Count - 1; i++)
+            for (int i = 0; i < stairs.Count; i += 2)
             {
                 StairRoom stair1 = stairs[i];
                 StairRoom stair2 = stairs[i + 1];
+
+                stair2.tile = floorConfig.stairTiles[1];
 
                 stair1.stairPair = stair2;
                 stair2.stairPair = stair1;

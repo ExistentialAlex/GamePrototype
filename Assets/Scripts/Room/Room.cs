@@ -25,12 +25,15 @@ namespace GameGeneration.Rooms
 
         public List<Door> doors { get; set; }
 
+        public List<Vector3> innerTiles { get; set; }
+
         public Room(Vector3 vectorPosition, List<Walls.WallTypes> walls, GameObject tile)
         {
             this.vectorPosition = vectorPosition;
             this.walls = walls;
             this.tile = tile;
             this.doors = new List<Door>();
+            this.innerTiles = new List<Vector3>();
         }
 
         public override string ToString()

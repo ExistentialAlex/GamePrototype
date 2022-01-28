@@ -33,6 +33,7 @@ namespace GameGeneration
         }
 
         public const string COMPONENT_TAGS_STAIR = "Stair";
+        public const string COMPONENT_TAGS_STAIR_DOWN = "Stair_Down";
         public const string COMPONENT_TAGS_EXIT = "Exit";
     }
 }

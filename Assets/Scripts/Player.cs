@@ -74,7 +74,12 @@ namespace GameGeneration.Player
             {
                 case Configuration.COMPONENT_TAGS_STAIR:
                     {
-                        StartCoroutine(MovePlayerToLinkedStair(collision.gameObject, 5));
+                        Invoke(nameof(MovePlayerToLinkedStair), 1);
+                        break;
+                    }
+                case Configuration.COMPONENT_TAGS_STAIR_DOWN:
+                    {
+                        GameManager.instance.playerReady = true;
                         break;
                     }
                 case Configuration.COMPONENT_TAGS_EXIT:
@@ -86,14 +91,53 @@ namespace GameGeneration.Player
             }
         }
 
-        private IEnumerator MovePlayerToLinkedStair(GameObject tileHit, float delay)
+        private void MovePlayerToLinkedStair()
         {
-            // Delay for a number of seconds
-            yield return new WaitForSeconds(delay);
+            if (!GameManager.instance.playerReady)
+            {
+                return;
+            }
 
-            Vector3 tilePosition = tileHit.transform.position;
+            GameManager.instance.playerReady = false;
 
-            //StairRoom currentStair = GameManager.instance.currentLevel.floors.Where(floor => floor.stairs.Where(stair => stair.vectorPosition))
+            // Get the players current position
+            Vector3 currentPos = transform.position;
+
+            Debug.Log("Moving player to next stair");
+
+            int x = Convert.ToInt32(Math.Floor(currentPos.x));
+            int y = Convert.ToInt32(Math.Floor(currentPos.y));
+
+            Vector3 tilePosition = new Vector3(x, y, 0f);
+
+            StairRoom currentStair = default;
+
+            // Find the current stair
+            foreach (Floor floor in GameManager.instance.currentLevel.floors)
+            {
+                foreach (StairRoom stair in floor.stairs)
+                {
+                    if (stair.innerTiles.Contains(tilePosition))
+                    {
+                        currentStair = stair;
+                        break;
+                    }
+                }
+            }
+
+            // if we haven't found the stair the player stepped on then exit
+            if (currentStair == null)
+            {
+                GameManager.instance.playerReady = true;
+                return;
+            }
+
+            StairRoom nextStair = currentStair.stairPair;
+            Vector3 teleportPos = nextStair.innerTiles[Convert.ToInt32(nextStair.innerTiles.Count / 2)];
+
+            Debug.Log("Moving player to stair: " + teleportPos.x + ":" + teleportPos.y);
+
+            transform.position = teleportPos;
         }
 
         /// <summary>

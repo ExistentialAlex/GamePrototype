@@ -29,7 +29,7 @@ namespace GameGeneration.Rooms
                 for (int y = relativeStartY; y < relativeStartY + roomHeight; y++)
                 {
                     Vector3 pos = new Vector3(x, y, 0f);
-
+                    room.innerTiles.Add(pos);
                     (Instantiate(room.tile, pos, Quaternion.identity) as GameObject).transform.SetParent(floor);
                 }
             }
