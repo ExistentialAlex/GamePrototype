@@ -16,8 +16,24 @@ namespace GameGeneration.Player
         public float playerSpeed = 3; // Baseline player speed
         private Room roomToMoveTo;
 
+        //Used to store a refrence to the Player's animator component
+        private Animator animator;
+
+        private enum AnimationTriggers
+        {
+            playerIdle,
+            playerHit
+        }
+
+        private enum AnimationBools
+        {
+            playerWalk
+        }
+
         private void Start()
         {
+            //Get a component reference to the Player's animator component
+            animator = GetComponent<Animator>();
             boxCollider = GetComponent<BoxCollider2D>();
         }
 
@@ -65,6 +81,16 @@ namespace GameGeneration.Player
             {
                 // Move
                 transform.Translate(moveDelta.x * playerSpeed, 0, 0f);
+            }
+
+            // If we're actually moving (I.e. the user has a button pressed) then animate the player walking
+            if (x != 0 || y != 0)
+            {
+                animator.SetBool(Convert.ToString(AnimationBools.playerWalk), true);
+            }
+            else
+            {
+                animator.SetBool(Convert.ToString(AnimationBools.playerWalk), false);
             }
         }
 
