@@ -26,11 +26,16 @@ namespace GameGeneration.Rooms
 
             for (int x = relativeStartX; x < relativeStartX + roomWidth; x++)
             {
+                int templateX = x - relativeStartX;
+
                 for (int y = relativeStartY; y < relativeStartY + roomHeight; y++)
                 {
+                    int templateY = y - relativeStartY;
+                    GameObject tile = room.template[templateX, templateY];
+
                     Vector3 pos = new Vector3(x, y, 0f);
                     room.innerTiles.Add(pos);
-                    (Instantiate(room.tile, pos, Quaternion.identity) as GameObject).transform.SetParent(floor);
+                    (Instantiate(tile, pos, Quaternion.identity) as GameObject).transform.SetParent(floor);
                 }
             }
 

@@ -18,6 +18,7 @@ namespace GameGeneration
         public GameObject[] stairTiles;
         public GameObject emptyTile;
         public GameObject entranceTile;
+        public GameObject exitTile;
         public GameObject[] wallTiles;
         public DoorConfig doorConfig { get; set; }
 

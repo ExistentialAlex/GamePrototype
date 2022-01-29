@@ -36,6 +36,26 @@ public static class Walls
         return new List<WallTypes>() { WallTypes.right, WallTypes.bottom, WallTypes.extra_top_left };
     }
 
+    public static List<WallTypes> TopLeftCorner_Boss()
+    {
+        return new List<WallTypes>() { WallTypes.top, WallTypes.left };
+    }
+
+    public static List<WallTypes> TopRightCorner_Boss()
+    {
+        return new List<WallTypes>() { WallTypes.top, WallTypes.right };
+    }
+
+    public static List<WallTypes> BottomLeftCorner_Boss()
+    {
+        return new List<WallTypes>() { WallTypes.left, WallTypes.bottom };
+    }
+
+    public static List<WallTypes> BottomRightCorner_Boss()
+    {
+        return new List<WallTypes>() { WallTypes.right, WallTypes.bottom };
+    }
+
     public static List<WallTypes> HorizontalOpen()
     {
         return new List<WallTypes>() { WallTypes.top, WallTypes.bottom };

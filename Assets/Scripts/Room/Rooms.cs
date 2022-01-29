@@ -217,49 +217,5 @@ namespace GameGeneration.Rooms
 
             return possibleRooms;
         }
-
-        public static readonly string[,] size2_standard_h = new string[roomWidth * 2, roomHeight]{{"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                    // === Bottom half will appear to right === //
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F"}};
-
-        public static readonly string[,] size2_standard_v = new string[roomWidth, roomHeight * 2]{{"F","F","F","F","F","F","F","F","F","F",/* Right */"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F",/* Side  */"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F",/* Will  */"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F",/* Be    */"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F",/* Above */"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F",/*       */"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F",/*       */"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F",/*       */"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F",/*       */"F","F","F","F","F","F","F","F","F","F"},
-                                                                                                     {"F","F","F","F","F","F","F","F","F","F",/*       */"F","F","F","F","F","F","F","F","F","F"}};
-
-        public static readonly string[,] size1_standard = new string[roomWidth, roomHeight]{{"F","F","F","F","F","F","F","F","F","F"},
-                                                                                            {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                            {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                            {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                            {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                            {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                            {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                            {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                            {"F","F","F","F","F","F","F","F","F","F"},
-                                                                                            {"F","F","F","F","F","F","F","F","F","F"}};
     }
 }

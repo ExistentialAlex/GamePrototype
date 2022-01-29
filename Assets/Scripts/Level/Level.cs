@@ -74,8 +74,6 @@ namespace GameGeneration
                 StairRoom stair1 = stairs[i];
                 StairRoom stair2 = stairs[i + 1];
 
-                stair2.tile = floorConfig.stairTiles[1];
-
                 stair1.stairPair = stair2;
                 stair2.stairPair = stair1;
             }
