@@ -7,9 +7,6 @@ namespace GameGeneration.Rooms
 {
     public static class Rooms
     {
-        public const int roomWidth = 10;
-        public const int roomHeight = 10;
-
         public enum Size3Shapes
         {
             // [ ][ ]

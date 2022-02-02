@@ -46,7 +46,7 @@ namespace GameGeneration
                 Floor floorToCreate = new Floor(floorConfig, x, y, i, level.noFloors, includeShop, includeSecret);
                 FloorGenerator.GenerateFloor(floorToCreate);
                 level.floors.Add(floorToCreate);
-                x = x + (roomGenerator.roomWidth * floorConfig.floorWidth) + 2;
+                x = x + (Room.roomWidth * floorConfig.floorWidth) + 2;
             }
         }
 

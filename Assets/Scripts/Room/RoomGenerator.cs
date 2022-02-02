@@ -8,8 +8,6 @@ namespace GameGeneration.Rooms
 {
     public class RoomGenerator : MonoBehaviour
     {
-        public int roomWidth = 10;
-        public int roomHeight = 10;
         public GameObject wall;
         private Vector3 playerPosition { get; set; }
         private int relativeStartX { get; set; }
@@ -19,16 +17,16 @@ namespace GameGeneration.Rooms
 
         public void SetupRoom(Room room, Transform floor, int floorStartX, int floorStartY)
         {
-            relativeStartX = Convert.ToInt32(roomWidth * room.vectorPosition.x) + floorStartX;
-            relativeStartY = Convert.ToInt32(roomHeight * room.vectorPosition.y) + floorStartY;
-            maxX = relativeStartX + roomWidth - 1;
-            maxY = relativeStartY + roomHeight - 1;
+            relativeStartX = Convert.ToInt32(Room.roomWidth * room.vectorPosition.x) + floorStartX;
+            relativeStartY = Convert.ToInt32(Room.roomHeight * room.vectorPosition.y) + floorStartY;
+            maxX = relativeStartX + Room.roomWidth - 1;
+            maxY = relativeStartY + Room.roomHeight - 1;
 
-            for (int x = relativeStartX; x < relativeStartX + roomWidth; x++)
+            for (int x = relativeStartX; x < relativeStartX + Room.roomWidth; x++)
             {
                 int templateX = x - relativeStartX;
 
-                for (int y = relativeStartY; y < relativeStartY + roomHeight; y++)
+                for (int y = relativeStartY; y < relativeStartY + Room.roomHeight; y++)
                 {
                     int templateY = y - relativeStartY;
                     GameObject tile = room.template[templateX, templateY];
@@ -43,7 +41,7 @@ namespace GameGeneration.Rooms
 
             if (room.type == Room.RoomType.entrance)
             {
-                AssignPlayerPosition(relativeStartX + roomWidth / 2, relativeStartY + roomHeight / 2);
+                AssignPlayerPosition(relativeStartX + Room.roomWidth / 2, relativeStartY + Room.roomHeight / 2);
                 InstantiatePlayer(floor);
             }
         }
@@ -107,7 +105,7 @@ namespace GameGeneration.Rooms
                 return;
             }
 
-            for (int i = 0; i < roomHeight; i++)
+            for (int i = 0; i < Room.roomHeight; i++)
             {
                 AddWall(x, i + y, floor); // left wall
             }
@@ -122,7 +120,7 @@ namespace GameGeneration.Rooms
                 return;
             }
 
-            for (int i = 0; i < roomHeight; i++)
+            for (int i = 0; i < Room.roomHeight; i++)
             {
                 AddWall(maxX, i + y, floor); // right wall
             }
@@ -137,7 +135,7 @@ namespace GameGeneration.Rooms
                 return;
             }
 
-            for (int i = 0; i < roomWidth; i++)
+            for (int i = 0; i < Room.roomWidth; i++)
             {
                 AddWall(i + x, maxY, floor); // top wall
             }
@@ -152,7 +150,7 @@ namespace GameGeneration.Rooms
                 return;
             }
 
-            for (int i = 0; i < roomWidth; i++)
+            for (int i = 0; i < Room.roomWidth; i++)
             {
                 AddWall(i + x, y, floor); // bottom wall
             }
@@ -167,12 +165,12 @@ namespace GameGeneration.Rooms
 
         private int GetHorizontalWallCenter()
         {
-            return Convert.ToInt32(Rooms.roomWidth / 2);
+            return Convert.ToInt32(Room.roomWidth / 2);
         }
 
         private int GetVerticalWallCenter()
         {
-            return Convert.ToInt32(Rooms.roomHeight / 2);
+            return Convert.ToInt32(Room.roomHeight / 2);
         }
 
         private void AddVerticalDoor(Door door, int x, int y, int wallMiddle, Transform floor)
@@ -184,7 +182,7 @@ namespace GameGeneration.Rooms
                 AddWall(x, i + y, floor);
             }
 
-            for (int i = bottomMostPoint + door.doorSize; i < roomHeight; i++)
+            for (int i = bottomMostPoint + door.doorSize; i < Room.roomHeight; i++)
             {
                 AddWall(x, i + y, floor);
             }
@@ -199,7 +197,7 @@ namespace GameGeneration.Rooms
                 AddWall(x + i, y, floor);
             }
 
-            for (int i = leftMostPoint + door.doorSize; i < roomWidth; i++)
+            for (int i = leftMostPoint + door.doorSize; i < Room.roomWidth; i++)
             {
                 AddWall(x + i, y, floor);
             }

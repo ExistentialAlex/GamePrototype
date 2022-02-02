@@ -11,16 +11,16 @@ namespace GameGeneration.Rooms
             this.type = RoomType.entrance;
         }
 
-        public static string[,] entrance_template = new string[roomWidth, roomHeight]{{ "f","f","f","f","f","f","f","f","f","f","f", },
-                                                                                   { "f","f","f","f","f","f","f","f","f","f","f", },
-                                                                                   { "f","f","f","f","f","f","f","f","f","f","f", },
-                                                                                   { "f","f","f","f","f","f","f","f","f","f","f", },
-                                                                                   { "f","f","f","f","f","f","f","f","f","f","f", },
-                                                                                   { "f","f","f","f","f","e","f","f","f","f","f", },
-                                                                                   { "f","f","f","f","f","f","f","f","f","f","f", },
-                                                                                   { "f","f","f","f","f","f","f","f","f","f","f", },
-                                                                                   { "f","f","f","f","f","f","f","f","f","f","f", },
-                                                                                   { "f","f","f","f","f","f","f","f","f","f","f", },
-                                                                                   { "f","f","f","f","f","f","f","f","f","f","f", },};
+        public static string[,] entrance_template = new string[roomWidth, roomHeight]{{ "f","f","f","f","f","f","f","f2","f2","f3","f", },
+                                                                                      { "f","f","f","f","f","f2","f2","f3","f3","f2","f", },
+                                                                                      { "f","f","f","f","f2","f2","f2","f2","f2","f2","f", },
+                                                                                      { "f","f","f","f2","f2","f3","f2","f2","f","f","f2", },
+                                                                                      { "f","f","f2","f2","f3","f3","f3","f2","f2","f","f2", },
+                                                                                      { "f","f2","f2","f3","f3","e","f3","f3","f2","f2","f2", },
+                                                                                      { "f","f","f2","f3","f3","f3","f3","f2","f2","f","f", },
+                                                                                      { "f","f","f","f3","f2","f3","f2","f2","f","f","f", },
+                                                                                      { "f","f","f","f2","f2","f2","f2","f3","f","f","f", },
+                                                                                      { "f","f","f2","f3","f","f2","f2","f3","f","f","f", },
+                                                                                      { "f","f","f","f2","f2","f2","f","f2","f","f","f", },};
     }
 }
