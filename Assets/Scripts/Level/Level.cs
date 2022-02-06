@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using rand = UnityEngine.Random;
-using GameGeneration.Rooms;
+using Prototype.GameGeneration.Rooms;
 
-namespace GameGeneration
+namespace Prototype.GameGeneration
 {
     public class Level
     {

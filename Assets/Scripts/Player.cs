@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GameGeneration;
+using Prototype.GameGeneration;
 using System;
-using GameGeneration.Rooms;
+using Prototype.GameGeneration.Rooms;
 using System.Linq;
 
-namespace GameGeneration.Player
+namespace Prototype.GameGeneration.Player
 {
     public class Player : MonoBehaviour
     {
@@ -100,7 +100,7 @@ namespace GameGeneration.Player
             {
                 case Configuration.COMPONENT_TAGS_STAIR:
                     {
-                        Invoke(nameof(MovePlayerToLinkedStair), 1);
+                        MovePlayerToLinkedStair(collision);
                         break;
                     }
                 case Configuration.COMPONENT_TAGS_STAIR_DOWN:
@@ -117,7 +117,7 @@ namespace GameGeneration.Player
             }
         }
 
-        private void MovePlayerToLinkedStair()
+        private void MovePlayerToLinkedStair(Collider2D collision)
         {
             if (!GameManager.instance.playerReady)
             {
@@ -126,15 +126,8 @@ namespace GameGeneration.Player
 
             GameManager.instance.playerReady = false;
 
-            // Get the players current position
-            Vector3 currentPos = transform.position;
-
-            Debug.Log("Moving player to next stair");
-
-            int x = Convert.ToInt32(Math.Floor(currentPos.x));
-            int y = Convert.ToInt32(Math.Floor(currentPos.y));
-
-            Vector3 tilePosition = new Vector3(x, y, 0f);
+            GameObject parent = collision.gameObject.transform.parent.gameObject;
+            Vector3 parentVector = parent.transform.position;
 
             StairRoom currentStair = default;
 
@@ -143,7 +136,7 @@ namespace GameGeneration.Player
             {
                 foreach (StairRoom stair in floor.stairs)
                 {
-                    if (stair.innerTiles.Contains(tilePosition))
+                    if (stair.globalVectorPosition == parentVector)
                     {
                         currentStair = stair;
                         break;
@@ -159,7 +152,7 @@ namespace GameGeneration.Player
             }
 
             StairRoom nextStair = currentStair.stairPair;
-            Vector3 teleportPos = nextStair.innerTiles[Convert.ToInt32(nextStair.innerTiles.Count / 2)];
+            Vector3 teleportPos = new Vector3(nextStair.globalVectorPosition.x + Room.roomWidth / 2, nextStair.globalVectorPosition.y + Room.roomHeight / 2); ;
 
             Debug.Log("Moving player to stair: " + teleportPos.x + ":" + teleportPos.y);
 

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameGeneration
+namespace Prototype.GameGeneration
 {
     public static class Configuration
     {

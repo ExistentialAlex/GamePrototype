@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using rand = UnityEngine.Random;
-using GameGeneration.Rooms;
+using Prototype.GameGeneration.Rooms;
 
-namespace GameGeneration
+namespace Prototype.GameGeneration
 {
+    using Prototype.Utilities;
+
     public class Floor
     {
         public Transform transform { get; set; }
@@ -25,19 +27,20 @@ namespace GameGeneration
         public int max3Rooms { get; set; }
         public DoorConfig doorConfig { get; set; }
 
-        #region Tiles
+        #region Templates
 
-        public GameObject[] floorTiles;
-        public GameObject[] bossTiles;
-        public GameObject[] shopTiles;
-        public GameObject[] secretTiles;
-        public GameObject[] stairTiles;
-        public GameObject emptyTile;
-        public GameObject entranceTile;
-        public GameObject exitTile;
-        public GameObject[] wallTiles;
+        public GameObject[] singleStandardRoomTemplates;
+        public GameObject[] doubleStandardRoomTemplates;
+        public GameObject[] tripleStandardRoomTemplates;
+        public GameObject[] shopRoomTemplates;
+        public GameObject[] secretRoomTemplates;
+        public GameObject[] bossRoomTemplates;
+        public GameObject[] stairRoomTemplates;
+        public GameObject[] stairDownRoomTemplates;
+        public GameObject[] emptyRoomTemplates;
+        public GameObject[] entranceRoomTemplates;
 
-        #endregion Tiles
+        #endregion Templates
 
         /// <summary>
         /// Setup the parameters for the current floor
@@ -59,15 +62,16 @@ namespace GameGeneration
             this.containsShop = containsShop;
             this.floorWidth = config.floorWidth;
             this.floorHeight = config.floorHeight;
-            this.floorTiles = config.floorTiles;
-            this.bossTiles = config.bossTiles;
-            this.shopTiles = config.shopTiles;
-            this.secretTiles = config.secretTiles;
-            this.stairTiles = config.stairTiles;
-            this.emptyTile = config.emptyTile;
-            this.entranceTile = config.entranceTile;
-            this.exitTile = config.exitTile;
-            this.wallTiles = config.wallTiles;
+            this.singleStandardRoomTemplates = config.singleStandardRoomTemplates;
+            this.doubleStandardRoomTemplates = config.doubleStandardRoomTemplates;
+            this.tripleStandardRoomTemplates = config.tripleStandardRoomTemplates;
+            this.bossRoomTemplates = config.bossRoomTemplates;
+            this.shopRoomTemplates = config.shopRoomTemplates;
+            this.secretRoomTemplates = config.secretRoomTemplates;
+            this.stairRoomTemplates = config.stairRoomTemplates;
+            this.stairDownRoomTemplates = config.stairDownRoomTemplates;
+            this.emptyRoomTemplates = config.emptyRoomTemplates;
+            this.entranceRoomTemplates = config.entranceRoomTemplates;
             this.emptyCells = config.emptyCells;
             this.max3Rooms = config.max3Rooms;
             this.doorConfig = config.doorConfig;
@@ -217,10 +221,12 @@ namespace GameGeneration
             int x = rand.Range(0, floor.floorWidth - 1); // will never be last column or row
             int y = rand.Range(0, floor.floorHeight - 1);
 
-            AddRoom(floor, new BossRoom(new Vector3(x, y, 0f), Walls.BottomLeftCorner_Boss(), ConvertTemplateToRoom(floor, BossRoom.bossBottomLeft)));
-            AddRoom(floor, new BossRoom(new Vector3(x + 1, y, 0f), Walls.BottomRightCorner_Boss(), ConvertTemplateToRoom(floor, BossRoom.bossBottomRight)));
-            AddRoom(floor, new BossRoom(new Vector3(x, y + 1, 0f), Walls.TopLeftCorner_Boss(), ConvertTemplateToRoom(floor, BossRoom.bossTopLeft)));
-            AddRoom(floor, new BossRoom(new Vector3(x + 1, y + 1, 0f), Walls.TopRightCorner_Boss(), ConvertTemplateToRoom(floor, BossRoom.bossTopRight)));
+            // TODO - Update boss rooms to pick from list of full boss rooms.
+
+            AddRoom(floor, new BossRoom(new Vector3(x, y, 0f), Walls.BottomLeftCorner_Boss(), floor.bossRoomTemplates[0]));
+            AddRoom(floor, new BossRoom(new Vector3(x + 1, y, 0f), Walls.BottomRightCorner_Boss(), floor.bossRoomTemplates[1]));
+            AddRoom(floor, new BossRoom(new Vector3(x, y + 1, 0f), Walls.TopLeftCorner_Boss(), floor.bossRoomTemplates[2]));
+            AddRoom(floor, new BossRoom(new Vector3(x + 1, y + 1, 0f), Walls.TopRightCorner_Boss(), floor.bossRoomTemplates[3]));
         }
 
         /// <summary>
@@ -231,7 +237,7 @@ namespace GameGeneration
         {
             Debug.Log("=== Adding Entrance Room ===");
             GetRandomEmptyRoom(floor, out int x, out int y);
-            AddRoom(floor, new EntranceRoom(new Vector3(x, y, 0f), Walls.AllWalls(), ConvertTemplateToRoom(floor, EntranceRoom.entrance_template)));
+            AddRoom(floor, new EntranceRoom(new Vector3(x, y, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.entranceRoomTemplates)));
         }
 
         /// <summary>
@@ -243,17 +249,17 @@ namespace GameGeneration
             Debug.Log("=== Adding Stairs ===");
             if (floor.floorNo == 0)
             {
-                AddStair(floor, StairRoom.stair);
+                AddStair(floor, Utilities.PickRandom(floor.stairRoomTemplates));
             }
             else if (floor.floorNo == floor.levelNo)
             {
-                AddStair(floor, StairRoom.stair_down);
+                AddStair(floor, Utilities.PickRandom(floor.stairDownRoomTemplates));
             }
             else
             {
                 // If it's a middle floor, add 2 stairs
-                AddStair(floor, StairRoom.stair);
-                AddStair(floor, StairRoom.stair_down);
+                AddStair(floor, Utilities.PickRandom(floor.stairRoomTemplates));
+                AddStair(floor, Utilities.PickRandom(floor.stairDownRoomTemplates));
             }
         }
 
@@ -262,10 +268,10 @@ namespace GameGeneration
         /// </summary>
         /// <param name="floor"></param>
         /// <param name="template"></param>
-        private static void AddStair(Floor floor, string[,] template)
+        private static void AddStair(Floor floor, GameObject template)
         {
             GetRandomEmptyRoom(floor, out int x, out int y);
-            floor.stairs.Add((StairRoom)AddRoom(floor, new StairRoom(new Vector3(x, y, 0f), Walls.AllWalls(), ConvertTemplateToRoom(floor, template))));
+            floor.stairs.Add((StairRoom)AddRoom(floor, new StairRoom(new Vector3(x, y, 0f), Walls.AllWalls(), template)));
         }
 
         /// <summary>
@@ -276,7 +282,7 @@ namespace GameGeneration
         {
             Debug.Log("=== Adding Shop ===");
             GetRandomEmptyRoom(floor, out int x, out int y);
-            AddRoom(floor, new ShopRoom(new Vector3(x, y, 0f), Walls.AllWalls(), ConvertTemplateToRoom(floor, ShopRoom.shop_template)));
+            AddRoom(floor, new ShopRoom(new Vector3(x, y, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.shopRoomTemplates)));
         }
 
         /// <summary>
@@ -289,7 +295,7 @@ namespace GameGeneration
             for (int i = 0; i < floor.noSecrets; i++)
             {
                 GetRandomEmptyRoom(floor, out int x, out int y);
-                AddRoom(floor, new SecretRoom(new Vector3(x, y, 0f), Walls.AllWalls(), ConvertTemplateToRoom(floor, SecretRoom.secret_template)));
+                AddRoom(floor, new SecretRoom(new Vector3(x, y, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.secretRoomTemplates)));
             }
         }
 
@@ -316,7 +322,7 @@ namespace GameGeneration
                     }
                 }
 
-                AddRoom(floor, new EmptyRoom(new Vector3(finalX, finalY, 0f), Walls.AllWalls(), ConvertTemplateToRoom(floor, EmptyRoom.empty_template)));
+                AddRoom(floor, new EmptyRoom(new Vector3(finalX, finalY, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.emptyRoomTemplates)));
             }
         }
 
@@ -343,7 +349,7 @@ namespace GameGeneration
                 List<Tuple<Vector3, List<Walls.WallTypes>>> chosenRoom = possibleRooms[randomNo];
                 foreach (Tuple<Vector3, List<Walls.WallTypes>> pos in chosenRoom)
                 {
-                    AddRoom(floor, new StandardRoom(pos.Item1, pos.Item2, ConvertTemplateToRoom(floor, StandardRoom.standard_template3)));
+                    AddRoom(floor, new StandardRoom(pos.Item1, pos.Item2, Utilities.PickRandom(floor.tripleStandardRoomTemplates)));
                 }
 
                 // Increment the number of size 3 rooms
@@ -362,14 +368,14 @@ namespace GameGeneration
                 List<Tuple<Vector3, List<Walls.WallTypes>>> chosenRoom = possibleRooms[randomNo];
                 foreach (Tuple<Vector3, List<Walls.WallTypes>> pos in chosenRoom)
                 {
-                    AddRoom(floor, new StandardRoom(pos.Item1, pos.Item2, ConvertTemplateToRoom(floor, StandardRoom.standard_template2)));
+                    AddRoom(floor, new StandardRoom(pos.Item1, pos.Item2, Utilities.PickRandom(floor.doubleStandardRoomTemplates)));
                 }
 
                 return;
             }
 
             // === Create a standard room === //
-            AddRoom(floor, new StandardRoom(position, Walls.AllWalls(), ConvertTemplateToRoom(floor, StandardRoom.standard_template)));
+            AddRoom(floor, new StandardRoom(position, Walls.AllWalls(), Utilities.PickRandom(floor.singleStandardRoomTemplates)));
             return;
         }
 
@@ -411,103 +417,6 @@ namespace GameGeneration
                     }
                 }
             }
-        }
-
-        public static GameObject[,] ConvertTemplateToRoom(Floor floor, string[,] template)
-        {
-            // We must initialise the array first
-            GameObject[,] initialisedTemplate = new GameObject[Room.roomWidth, Room.roomHeight];
-
-            for (int x = 0; x < Room.roomWidth; x++)
-            {
-                for (int y = 0; y < Room.roomHeight; y++)
-                {
-                    GameObject tile;
-
-                    switch (template[x, y])
-                    {
-                        case "b_bl":
-                            {
-                                tile = floor.bossTiles[2];
-                                break;
-                            }
-                        case "b_br":
-                            {
-                                tile = floor.bossTiles[3];
-                                break;
-                            }
-                        case "b_tl":
-                            {
-                                tile = floor.bossTiles[0];
-                                break;
-                            }
-                        case "b_tr":
-                            {
-                                tile = floor.bossTiles[1];
-                                break;
-                            }
-                        case "e":
-                            {
-                                tile = floor.entranceTile;
-                                break;
-                            }
-                        case "ex":
-                            {
-                                tile = floor.exitTile;
-                                break;
-                            }
-                        case "em":
-                            {
-                                tile = floor.emptyTile;
-                                break;
-                            }
-                        case "sh":
-                            {
-                                tile = floor.shopTiles[0];
-                                break;
-                            }
-                        case "se":
-                            {
-                                tile = floor.secretTiles[0];
-                                break;
-                            }
-                        case "st":
-                            {
-                                tile = floor.stairTiles[0];
-                                break;
-                            }
-                        case "std":
-                            {
-                                tile = floor.stairTiles[1];
-                                break;
-                            }
-                        case "f":
-                            {
-                                tile = floor.floorTiles[0];
-                                break;
-                            }
-                        case "f2":
-                            {
-                                tile = floor.floorTiles[1];
-                                break;
-                            }
-                        case "f3":
-                            {
-                                tile = floor.floorTiles[2];
-                                break;
-                            }
-                        default:
-                            {
-                                tile = floor.floorTiles[0];
-                                break;
-                            }
-                    }
-
-                    initialisedTemplate[x, y] = tile;
-                }
-            }
-
-            return initialisedTemplate;
         }
     }
 }

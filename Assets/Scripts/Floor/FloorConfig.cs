@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameGeneration
+namespace Prototype.GameGeneration
 {
     public class FloorConfig : MonoBehaviour
     {
@@ -11,15 +11,17 @@ namespace GameGeneration
         public int floorWidth = 6;
         public int emptyCells = 3;
         public int max3Rooms = 3;
-        public GameObject[] floorTiles;
-        public GameObject[] bossTiles;
-        public GameObject[] shopTiles;
-        public GameObject[] secretTiles;
-        public GameObject[] stairTiles;
-        public GameObject emptyTile;
-        public GameObject entranceTile;
-        public GameObject exitTile;
-        public GameObject[] wallTiles;
+
+        public GameObject[] singleStandardRoomTemplates;
+        public GameObject[] doubleStandardRoomTemplates;
+        public GameObject[] tripleStandardRoomTemplates;
+        public GameObject[] shopRoomTemplates;
+        public GameObject[] secretRoomTemplates;
+        public GameObject[] bossRoomTemplates;
+        public GameObject[] stairRoomTemplates;
+        public GameObject[] stairDownRoomTemplates;
+        public GameObject[] emptyRoomTemplates;
+        public GameObject[] entranceRoomTemplates;
         public DoorConfig doorConfig { get; set; }
 
         public void GetDoorConfig()

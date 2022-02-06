@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using rand = UnityEngine.Random;
 using System;
-using GameGeneration.Rooms;
+using Prototype.GameGeneration.Rooms;
 
-namespace GameGeneration
+namespace Prototype.GameGeneration
 {
     public class Door
     {

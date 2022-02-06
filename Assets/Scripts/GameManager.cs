@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using GameGeneration.Rooms;
+using Prototype.GameGeneration.Rooms;
 
-namespace GameGeneration
+namespace Prototype.GameGeneration
 {
     public class GameManager : MonoBehaviour
     {
@@ -62,7 +62,19 @@ namespace GameGeneration
             Debug.Log($"Level {levelNo} finished, loading next level");
             levelNo++;
             instance.playerReady = false;
+
+            // if you've completed the requisit levels then end the game.
+            if (levelNo == noOfLevels)
+            {
+                GameOver();
+            }
+
             SceneManager.LoadScene(0);
+        }
+
+        public void GameOver()
+        {
+            enabled = false;
         }
 
         /// <summary>

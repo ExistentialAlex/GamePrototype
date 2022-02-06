@@ -4,11 +4,12 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-namespace GameGeneration.Rooms
+namespace Prototype.GameGeneration.Rooms
 {
     public class RoomGenerator : MonoBehaviour
     {
         public GameObject wall;
+        public GameObject entranceTemplate;
         private Vector3 playerPosition { get; set; }
         private int relativeStartX { get; set; }
         private int relativeStartY { get; set; }
@@ -19,23 +20,13 @@ namespace GameGeneration.Rooms
         {
             relativeStartX = Convert.ToInt32(Room.roomWidth * room.vectorPosition.x) + floorStartX;
             relativeStartY = Convert.ToInt32(Room.roomHeight * room.vectorPosition.y) + floorStartY;
+
+            room.globalVectorPosition = new Vector3(relativeStartX, relativeStartY, 0f);
+
             maxX = relativeStartX + Room.roomWidth - 1;
             maxY = relativeStartY + Room.roomHeight - 1;
 
-            for (int x = relativeStartX; x < relativeStartX + Room.roomWidth; x++)
-            {
-                int templateX = x - relativeStartX;
-
-                for (int y = relativeStartY; y < relativeStartY + Room.roomHeight; y++)
-                {
-                    int templateY = y - relativeStartY;
-                    GameObject tile = room.template[templateX, templateY];
-
-                    Vector3 pos = new Vector3(x, y, 0f);
-                    room.innerTiles.Add(pos);
-                    (Instantiate(tile, pos, Quaternion.identity) as GameObject).transform.SetParent(floor);
-                }
-            }
+            (Instantiate(room.template, room.globalVectorPosition, Quaternion.identity) as GameObject).transform.SetParent(floor);
 
             SetupWalls(room, floor, relativeStartX, relativeStartY);
 
