@@ -18,22 +18,22 @@ public static class Walls
 
     public static List<WallTypes> TopLeftCorner()
     {
-        return new List<WallTypes>() { WallTypes.top, WallTypes.left, WallTypes.extra_bottom_right };
+        return new List<WallTypes>() { WallTypes.top, WallTypes.left };
     }
 
     public static List<WallTypes> TopRightCorner()
     {
-        return new List<WallTypes>() { WallTypes.top, WallTypes.right, WallTypes.extra_bottom_left };
+        return new List<WallTypes>() { WallTypes.top, WallTypes.right };
     }
 
     public static List<WallTypes> BottomLeftCorner()
     {
-        return new List<WallTypes>() { WallTypes.left, WallTypes.bottom, WallTypes.extra_top_right };
+        return new List<WallTypes>() { WallTypes.left, WallTypes.bottom };
     }
 
     public static List<WallTypes> BottomRightCorner()
     {
-        return new List<WallTypes>() { WallTypes.right, WallTypes.bottom, WallTypes.extra_top_left };
+        return new List<WallTypes>() { WallTypes.right, WallTypes.bottom };
     }
 
     public static List<WallTypes> TopLeftCorner_Boss()
