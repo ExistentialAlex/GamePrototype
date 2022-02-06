@@ -223,10 +223,10 @@ namespace Prototype.GameGeneration
 
             // TODO - Update boss rooms to pick from list of full boss rooms.
 
-            AddRoom(floor, new BossRoom(new Vector3(x, y, 0f), Walls.BottomLeftCorner_Boss(), floor.bossRoomTemplates[0]));
-            AddRoom(floor, new BossRoom(new Vector3(x + 1, y, 0f), Walls.BottomRightCorner_Boss(), floor.bossRoomTemplates[1]));
-            AddRoom(floor, new BossRoom(new Vector3(x, y + 1, 0f), Walls.TopLeftCorner_Boss(), floor.bossRoomTemplates[2]));
-            AddRoom(floor, new BossRoom(new Vector3(x + 1, y + 1, 0f), Walls.TopRightCorner_Boss(), floor.bossRoomTemplates[3]));
+            AddRoom(floor, new BossRoom(new Vector3(x, y, 0f), Walls.BottomLeftCorner(), floor.bossRoomTemplates[0]));
+            AddRoom(floor, new BossRoom(new Vector3(x + 1, y, 0f), Walls.BottomRightCorner(), floor.bossRoomTemplates[1]));
+            AddRoom(floor, new BossRoom(new Vector3(x, y + 1, 0f), Walls.TopLeftCorner(), floor.bossRoomTemplates[2]));
+            AddRoom(floor, new BossRoom(new Vector3(x + 1, y + 1, 0f), Walls.TopRightCorner(), floor.bossRoomTemplates[3]));
         }
 
         /// <summary>
