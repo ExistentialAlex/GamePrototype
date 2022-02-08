@@ -9,7 +9,11 @@ namespace Prototype.GameGeneration.Rooms
     public class RoomGenerator : MonoBehaviour
     {
         public GameObject wall;
-        public GameObject entranceTemplate;
+        public GameObject doorTile;
+
+        private int wallWidth
+        { get { return 1; } }
+
         private Vector3 playerPosition { get; set; }
         private int relativeStartX { get; set; }
         private int relativeStartY { get; set; }
@@ -18,8 +22,8 @@ namespace Prototype.GameGeneration.Rooms
 
         public void SetupRoom(Room room, Transform floor, int floorStartX, int floorStartY)
         {
-            relativeStartX = Convert.ToInt32((Room.roomWidth + 1) * room.vectorPosition.x) + floorStartX;
-            relativeStartY = Convert.ToInt32((Room.roomHeight + 1) * room.vectorPosition.y) + floorStartY;
+            relativeStartX = Convert.ToInt32((Room.roomWidth + wallWidth) * room.vectorPosition.x) + floorStartX;
+            relativeStartY = Convert.ToInt32((Room.roomHeight + wallWidth) * room.vectorPosition.y) + floorStartY;
 
             room.globalVectorPosition = new Vector3(relativeStartX, relativeStartY, 0f);
 
@@ -136,6 +140,11 @@ namespace Prototype.GameGeneration.Rooms
 
         #region Door
 
+        private void AddDoor(int x, int y, Transform transform)
+        {
+            Instantiate(doorTile, new Vector3(x, y, 0f), Quaternion.identity).transform.SetParent(transform);
+        }
+
         private int GetHorizontalWallCenter()
         {
             return Convert.ToInt32(Room.roomWidth / 2);
@@ -155,6 +164,11 @@ namespace Prototype.GameGeneration.Rooms
                 AddWall(x, i + y, transform);
             }
 
+            for (int i = bottomMostPoint; i < (bottomMostPoint + door.doorSize); i++)
+            {
+                AddDoor(x, i + y, transform);
+            }
+
             for (int i = bottomMostPoint + door.doorSize; i <= Room.roomHeight; i++)
             {
                 AddWall(x, i + y, transform);
@@ -168,6 +182,11 @@ namespace Prototype.GameGeneration.Rooms
             for (int i = -1; i < leftMostPoint; i++)
             {
                 AddWall(x + i, y, transform);
+            }
+
+            for (int i = leftMostPoint; i < (leftMostPoint + door.doorSize); i++)
+            {
+                AddDoor(x + i, y, transform);
             }
 
             for (int i = leftMostPoint + door.doorSize; i <= Room.roomWidth; i++)
