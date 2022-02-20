@@ -1,15 +1,41 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Prototype.GameGeneration.Rooms
 {
+    using System;
+    using System.Collections.Generic;
+    using UnityEngine;
+
+    /// <summary>
+    /// The room structure class.
+    /// </summary>
     public class Room
     {
-        public const int roomWidth = 10;
-        public const int roomHeight = 10;
+        /// <summary>
+        /// The height of a room.
+        /// </summary>
+        public static readonly int RoomHeight = 10;
 
+        /// <summary>
+        /// The width of a room.
+        /// </summary>
+        public static readonly int RoomWidth = 10;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Room"/> class.
+        /// </summary>
+        /// <param name="vectorPosition">The position of the room in 3D space.</param>
+        /// <param name="walls">List of walls in the room.</param>
+        /// <param name="template">The template or prefab the room should use.</param>
+        public Room(Vector3 vectorPosition, List<Walls.WallTypes> walls, GameObject template)
+        {
+            this.VectorPosition = vectorPosition;
+            this.Walls = walls;
+            this.Doors = new List<Door>();
+            this.Template = template;
+        }
+
+        /// <summary>
+        /// The type of room.
+        /// </summary>
         public enum RoomType
         {
             entrance,
@@ -21,28 +47,49 @@ namespace Prototype.GameGeneration.Rooms
             secret
         }
 
-        public RoomType type { get; set; }
-        public Vector3 vectorPosition { get; set; }
-        public Vector3 globalVectorPosition { get; set; }
-        public List<Walls.WallTypes> walls { get; set; }
-        public GameObject tile { get; set; }
+        /// <summary>
+        /// Gets or sets the list of doors in the room.
+        /// </summary>
+        /// <value>List of doors in the room.</value>
+        public List<Door> Doors { get; set; }
 
-        public List<Door> doors { get; set; }
+        /// <summary>
+        /// Gets or sets the global vector position of the room.
+        /// </summary>
+        /// <value>The global vector position of the room.</value>
+        public Vector3 GlobalVectorPosition { get; set; }
 
-        public GameObject template { get; set; }
+        /// <summary>
+        /// Gets or sets the template/prefab of the room.
+        /// </summary>
+        /// <value>The template/prefab of the room.</value>
+        public GameObject Template { get; set; }
 
-        public Room(Vector3 vectorPosition, List<Walls.WallTypes> walls, GameObject template)
-        {
-            this.vectorPosition = vectorPosition;
-            this.walls = walls;
-            this.tile = tile;
-            this.doors = new List<Door>();
-            this.template = template;
-        }
+        /// <summary>
+        /// Gets or sets the room type.
+        /// </summary>
+        /// <value>The room type.</value>
+        public RoomType Type { get; set; }
 
+        /// <summary>
+        /// Gets or sets the local vector position.
+        /// </summary>
+        /// <value>The local vector position.</value>
+        public Vector3 VectorPosition { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of walls in the room.
+        /// </summary>
+        /// <value>The list of wall in the room.</value>
+        public List<Walls.WallTypes> Walls { get; set; }
+
+        /// <summary>
+        /// Converts the type of room to a string.
+        /// </summary>
+        /// <returns>The room type as a string.</returns>
         public override string ToString()
         {
-            return Convert.ToString(type);
+            return Convert.ToString(this.Type);
         }
     }
 }

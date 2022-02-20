@@ -1,103 +1,137 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using rand = UnityEngine.Random;
-using Prototype.GameGeneration.Rooms;
-
 namespace Prototype.GameGeneration
 {
-    using Prototype.Utilities;
+    using System.Collections.Generic;
+    using Prototype.GameGeneration.Rooms;
+    using UnityEngine;
 
+    using rand = UnityEngine.Random;
+
+    /// <summary>
+    /// Class defining the structure of a floor.
+    /// </summary>
     public class Floor
     {
-        public Transform transform { get; set; }
-        public Room[,] rooms { get; set; } // [,] Designates a 2D array
-        public List<StairRoom> stairs { get; set; }
-        public int floorNo { get; set; }
-        public int levelNo { get; set; }
-        public int startX { get; set; }
-        public int startY { get; set; }
-        public int floorWidth { get; set; }
-        public int floorHeight { get; set; }
-        public int current3Rooms { get; set; }
-        public bool containsShop { get; set; }
-        public bool containsSecret { get; set; }
-        public int noSecrets { get; set; }
-        public int emptyCells { get; set; }
-        public int max3Rooms { get; set; }
-        public DoorConfig doorConfig { get; set; }
-
-        #region Templates
-
-        public GameObject[] singleStandardRoomTemplates;
-        public GameObject[] doubleStandardRoomTemplates;
-        public GameObject[] tripleStandardRoomTemplates;
-        public GameObject[] shopRoomTemplates;
-        public GameObject[] secretRoomTemplates;
-        public GameObject[] bossRoomTemplates;
-        public GameObject[] stairRoomTemplates;
-        public GameObject[] stairDownRoomTemplates;
-        public GameObject[] emptyRoomTemplates;
-        public GameObject[] entranceRoomTemplates;
-
-        #endregion Templates
-
         /// <summary>
-        /// Setup the parameters for the current floor
+        /// Initializes a new instance of the <see cref="Floor"/> class.
         /// </summary>
-        /// <param name="config"></param>
-        /// <param name="startX"></param>
-        /// <param name="startY"></param>
-        /// <param name="floorNo"></param>
-        /// <param name="levelNo"></param>
-        /// <param name="containsShop"></param>
-        /// <param name="containsSecret"></param>
+        /// <param name="config">Floor configuration.</param>
+        /// <param name="startX">Global starting X coordinate.</param>
+        /// <param name="startY">Global starting Y coordinate.</param>
+        /// <param name="floorNo">The floor number.</param>
+        /// <param name="levelNo">The level number.</param>
+        /// <param name="containsShop">Whether the floor contains a shop.</param>
+        /// <param name="containsSecret">Whether the floor contains secrets.</param>
         public Floor(FloorConfig config, int startX, int startY, int floorNo, int levelNo, bool containsShop, bool containsSecret)
         {
-            this.startX = startX;
-            this.startY = startY;
-            this.floorNo = floorNo;
-            this.levelNo = levelNo;
-            this.containsSecret = containsSecret;
-            this.containsShop = containsShop;
-            this.floorWidth = config.floorWidth;
-            this.floorHeight = config.floorHeight;
-            this.singleStandardRoomTemplates = config.singleStandardRoomTemplates;
-            this.doubleStandardRoomTemplates = config.doubleStandardRoomTemplates;
-            this.tripleStandardRoomTemplates = config.tripleStandardRoomTemplates;
-            this.bossRoomTemplates = config.bossRoomTemplates;
-            this.shopRoomTemplates = config.shopRoomTemplates;
-            this.secretRoomTemplates = config.secretRoomTemplates;
-            this.stairRoomTemplates = config.stairRoomTemplates;
-            this.stairDownRoomTemplates = config.stairDownRoomTemplates;
-            this.emptyRoomTemplates = config.emptyRoomTemplates;
-            this.entranceRoomTemplates = config.entranceRoomTemplates;
-            this.emptyCells = config.emptyCells;
-            this.max3Rooms = config.max3Rooms;
-            this.doorConfig = config.doorConfig;
+            this.FloorConfig = config;
 
-            current3Rooms = 0;
-            noSecrets = containsSecret ? rand.Range(1, 2) : 0; // returns either 1 or 2;
+            this.StartX = startX;
+            this.StartY = startY;
+            this.FloorNo = floorNo;
+            this.LevelNo = levelNo;
+            this.ContainsSecret = containsSecret;
+            this.ContainsShop = containsShop;
+
+            this.Current3Rooms = 0;
+            this.NoSecrets = containsSecret ? rand.Range(1, 2) : 0; // returns either 1 or 2;
 
             // Create the floor to assign everything to
-            transform = new GameObject("Floor_" + levelNo + "_" + floorNo).transform;
+            this.Transform = new GameObject("Floor_" + levelNo + "_" + floorNo).transform;
 
             // Create a new room
-            rooms = new Room[floorWidth, floorHeight];
-            stairs = new List<StairRoom>();
+            this.Rooms = new Room[this.FloorConfig.FloorWidth, this.FloorConfig.FloorHeight];
+            this.Stairs = new List<StairRoom>();
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the floor contains a secret.
+        /// </summary>
+        /// <value>Whether the floor contains a secret.</value>
+        public bool ContainsSecret { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the floor contains a shop.
+        /// </summary>
+        /// <value>Whether the floor contains a shop.</value>
+        public bool ContainsShop { get; private set; }
+
+        /// <summary>
+        /// Gets the door config.
+        /// </summary>
+        /// <value>The floors door configuration.</value>
+        public DoorConfig DoorConfig { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the floor configuration.
+        /// </summary>
+        /// <value>The floor configuration.</value>
+        public FloorConfig FloorConfig { get; set; }
+
+        /// <summary>
+        /// Gets the floor number.
+        /// </summary>
+        /// <value>The floor number.</value>
+        public int FloorNo { get; private set; }
+
+        /// <summary>
+        /// Gets the level number.
+        /// </summary>
+        /// <value>The level number.</value>
+        public int LevelNo { get; private set; }
+
+        /// <summary>
+        /// Gets the number of secrets for the floor.
+        /// </summary>
+        /// <value>The number of secrets.</value>
+        public int NoSecrets { get; private set; }
+
+        /// <summary>
+        /// Gets the 2D array of rooms in the floor.
+        /// </summary>
+        /// <value>The 2D array of rooms.</value>
+        public Room[,] Rooms { get; private set; }
+
+        /// <summary>
+        /// Gets the list of stairs in the floor.
+        /// </summary>
+        /// <value>The list of stairs.</value>
+        public List<StairRoom> Stairs { get; private set; }
+
+        /// <summary>
+        /// Gets the starting X coordinate of the floor.
+        /// </summary>
+        /// <value>The starting X coordinate.</value>
+        public int StartX { get; private set; }
+
+        /// <summary>
+        /// Gets the starting Y coordinate of the floor.
+        /// </summary>
+        /// <value>The starting Y coordinate.</value>
+        public int StartY { get; private set; }
+
+        /// <summary>
+        /// Gets the transform for the floor.
+        /// </summary>
+        /// <value>The transform.</value>
+        public Transform Transform { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the number of size 3 rooms.
+        /// </summary>
+        /// <value>The number of size 3 rooms currently in the floor.</value>
+        internal int Current3Rooms { get; set; }
 
         /// <summary>
         /// Instantiate the floor and place it on the screen.
         /// </summary>
-        /// <param name="roomGenerator"></param>
+        /// <param name="roomGenerator">The room generator.</param>
         public void InstantiateFloor(RoomGenerator roomGenerator)
         {
-            for (int x = 0; x < floorWidth; x++)
+            for (int x = 0; x < this.FloorConfig.FloorWidth; x++)
             {
-                for (int y = 0; y < floorHeight; y++)
+                for (int y = 0; y < this.FloorConfig.FloorHeight; y++)
                 {
-                    InstantiateRoom(roomGenerator, rooms[x, y]);
+                    this.InstantiateRoom(roomGenerator, this.Rooms[x, y]);
                 }
             }
         }
@@ -105,318 +139,11 @@ namespace Prototype.GameGeneration
         /// <summary>
         /// Instantiate the room and place it on the screen.
         /// </summary>
-        /// <param name="roomGenerator"></param>
-        /// <param name="room"></param>
+        /// <param name="roomGenerator">The room generator.</param>
+        /// <param name="room">The room to generate.</param>
         private void InstantiateRoom(RoomGenerator roomGenerator, Room room)
         {
-            roomGenerator.SetupRoom(room, transform, startX, startY);
-        }
-    }
-
-    public static class FloorGenerator
-    {
-        /// <summary>
-        /// Gets a random empty cell in the current floor
-        /// </summary>
-        /// <param name="cells">The cells to get a random value from</param>
-        /// <param name="x">The x coordinate of the new cell</param>
-        /// <param name="y">The y coordinate of the new cell</param>
-        public static void GetRandomEmptyRoom(Floor floor, out int x, out int y)
-        {
-            do
-            {
-                x = rand.Range(0, floor.floorWidth);
-                y = rand.Range(0, floor.floorHeight);
-            }
-            while (floor.rooms[x, y] != null);
-        }
-
-        /// <summary>
-        /// Checks to see if a cell within the current floor is next to any adjacent cells
-        /// </summary>
-        /// <param name="position">The position to check</param>
-        /// <returns></returns>
-        public static bool AreAnyAdjacentRoomsPopulated(Floor floor, Vector3 position)
-        {
-            // if < 8, then at least one cell populated
-            return Rooms.Rooms.GetUnpopulatedAdjacentRooms(position, floor.rooms, floor.floorWidth, floor.floorHeight).Count < 8;
-        }
-
-        /// <summary>
-        /// Converts the current vector3 to a relevant vector3 based on the floors start X and Y position
-        /// </summary>
-        /// <param name="position">The position to convert</param>
-        /// <returns></returns>
-        public static Vector3 ConvertToRelevantCoordinate(Floor floor, Vector3 position)
-        {
-            position.x = Convert.ToInt32(position.x) + floor.startX;
-            position.y = Convert.ToInt32(position.y) + floor.startY;
-            return position;
-        }
-
-        /// <summary>
-        /// Generate a floor containing an array of rooms.
-        /// This will be based on the supplied floor config when the floor was instantiated.
-        /// </summary>
-        /// <param name="floor"></param>
-        public static void GenerateFloor(Floor floor)
-        {
-            // Add Boss Room
-            if (floor.floorNo == floor.levelNo)
-            {
-                AddBossRoom(floor);
-            }
-
-            // Add Entrance
-            if (floor.floorNo == 0)
-            {
-                AddEntranceRoom(floor);
-            }
-
-            // Add Stairs
-            if (floor.levelNo != 0)
-            {
-                AddStairRooms(floor);
-            }
-
-            // Add Shop
-            if (floor.containsShop)
-            {
-                AddShopRoom(floor);
-            }
-
-            // Add Secrets
-            if (floor.containsSecret)
-            {
-                AddSecretRoom(floor);
-            }
-
-            // Add Empty Cells
-            AddEmptyRooms(floor);
-
-            // Loop through remaining spaces to place new rooms
-            Debug.Log("=== Adding Remaining Rooms ===");
-            for (int x = 0; x < floor.floorWidth; x++)
-            {
-                for (int y = 0; y < floor.floorHeight; y++)
-                {
-                    if (floor.rooms[x, y] == null)
-                    {
-                        AddStandardRoom(floor, new Vector3(x, y, 0f));
-                    }
-                }
-            }
-
-            // Add a door to each room
-            AddDoors(floor);
-        }
-
-        /// <summary>
-        /// Add a boss room to the floor
-        /// </summary>
-        /// <param name="floor"></param>
-        private static void AddBossRoom(Floor floor)
-        {
-            Debug.Log("=== Adding Boss Room ===");
-            int x = rand.Range(0, floor.floorWidth - 1); // will never be last column or row
-            int y = rand.Range(0, floor.floorHeight - 1);
-
-            // TODO - Update boss rooms to pick from list of full boss rooms.
-
-            AddRoom(floor, new BossRoom(new Vector3(x, y, 0f), Walls.BottomLeftCorner(), floor.bossRoomTemplates[0]));
-            AddRoom(floor, new BossRoom(new Vector3(x + 1, y, 0f), Walls.BottomRightCorner(), floor.bossRoomTemplates[1]));
-            AddRoom(floor, new BossRoom(new Vector3(x, y + 1, 0f), Walls.TopLeftCorner(), floor.bossRoomTemplates[2]));
-            AddRoom(floor, new BossRoom(new Vector3(x + 1, y + 1, 0f), Walls.TopRightCorner(), floor.bossRoomTemplates[3]));
-        }
-
-        /// <summary>
-        /// Add an entrance to the floor
-        /// </summary>
-        /// <param name="floor"></param>
-        private static void AddEntranceRoom(Floor floor)
-        {
-            Debug.Log("=== Adding Entrance Room ===");
-            GetRandomEmptyRoom(floor, out int x, out int y);
-            AddRoom(floor, new EntranceRoom(new Vector3(x, y, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.entranceRoomTemplates)));
-        }
-
-        /// <summary>
-        /// Add stair rooms to the floor
-        /// </summary>
-        /// <param name="floor"></param>
-        private static void AddStairRooms(Floor floor)
-        {
-            Debug.Log("=== Adding Stairs ===");
-            if (floor.floorNo == 0)
-            {
-                AddStair(floor, Utilities.PickRandom(floor.stairRoomTemplates));
-            }
-            else if (floor.floorNo == floor.levelNo)
-            {
-                AddStair(floor, Utilities.PickRandom(floor.stairDownRoomTemplates));
-            }
-            else
-            {
-                // If it's a middle floor, add 2 stairs
-                AddStair(floor, Utilities.PickRandom(floor.stairRoomTemplates));
-                AddStair(floor, Utilities.PickRandom(floor.stairDownRoomTemplates));
-            }
-        }
-
-        /// <summary>
-        /// Add a stair to the floor with a specific template
-        /// </summary>
-        /// <param name="floor"></param>
-        /// <param name="template"></param>
-        private static void AddStair(Floor floor, GameObject template)
-        {
-            GetRandomEmptyRoom(floor, out int x, out int y);
-            floor.stairs.Add((StairRoom)AddRoom(floor, new StairRoom(new Vector3(x, y, 0f), Walls.AllWalls(), template)));
-        }
-
-        /// <summary>
-        /// Add a shop to the floor
-        /// </summary>
-        /// <param name="floor"></param>
-        private static void AddShopRoom(Floor floor)
-        {
-            Debug.Log("=== Adding Shop ===");
-            GetRandomEmptyRoom(floor, out int x, out int y);
-            AddRoom(floor, new ShopRoom(new Vector3(x, y, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.shopRoomTemplates)));
-        }
-
-        /// <summary>
-        /// Add a secret room to the floor
-        /// </summary>
-        /// <param name="floor"></param>
-        private static void AddSecretRoom(Floor floor)
-        {
-            Debug.Log("=== Adding Secret Rooms ===");
-            for (int i = 0; i < floor.noSecrets; i++)
-            {
-                GetRandomEmptyRoom(floor, out int x, out int y);
-                AddRoom(floor, new SecretRoom(new Vector3(x, y, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.secretRoomTemplates)));
-            }
-        }
-
-        /// <summary>
-        /// Add empty rooms to the floor, this helps to shake up the layout
-        /// </summary>
-        /// <param name="floor"></param>
-        private static void AddEmptyRooms(Floor floor)
-        {
-            Debug.Log("=== Adding Empty Rooms ===");
-            for (int i = 0; i < floor.emptyCells; i++)
-            {
-                int finalX = -1;
-                int finalY = -1;
-                int retries = 0;
-                while (finalX == -1 && finalY == -1 && retries < 3)
-                {
-                    GetRandomEmptyRoom(floor, out int x, out int y);
-                    retries++;
-                    if (!AreAnyAdjacentRoomsPopulated(floor, new Vector3(x, y)) || retries == 3)
-                    {
-                        finalX = x;
-                        finalY = y;
-                    }
-                }
-
-                AddRoom(floor, new EmptyRoom(new Vector3(finalX, finalY, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.emptyRoomTemplates)));
-            }
-        }
-
-        /// <summary>
-        /// Add a standard room to the floor, the overall room can be made of 1, 2 or 3 rooms
-        /// and it's position will be based on the starting vector
-        /// </summary>
-        /// <param name="floor"></param>
-        /// <param name="position"></param>
-        public static void AddStandardRoom(Floor floor, Vector3 position)
-        {
-            List<List<Tuple<Vector3, List<Walls.WallTypes>>>> possibleRooms = new List<List<Tuple<Vector3, List<Walls.WallTypes>>>>();
-
-            // === Create a Room of Size 3 === //
-            if (Convert.ToBoolean(rand.Range(0, 2)) && floor.current3Rooms < floor.max3Rooms)
-            {
-                possibleRooms.AddRange(Rooms.Rooms.GetPossibleSize3Rooms(position, floor.rooms, floor.floorWidth, floor.floorHeight));
-            }
-
-            if (possibleRooms.Count > 0)
-            {
-                // Pick a random room from our list of possible rooms
-                int randomNo = rand.Range(0, possibleRooms.Count - 1);
-                List<Tuple<Vector3, List<Walls.WallTypes>>> chosenRoom = possibleRooms[randomNo];
-                foreach (Tuple<Vector3, List<Walls.WallTypes>> pos in chosenRoom)
-                {
-                    AddRoom(floor, new StandardRoom(pos.Item1, pos.Item2, Utilities.PickRandom(floor.tripleStandardRoomTemplates)));
-                }
-
-                // Increment the number of size 3 rooms
-                floor.current3Rooms++;
-
-                return;
-            }
-
-            // === Room of Size 2 === //
-            possibleRooms.AddRange(Rooms.Rooms.GetPossibleSize2Rooms(position, floor.rooms, floor.floorWidth, floor.floorHeight));
-
-            if (possibleRooms.Count > 0)
-            {
-                // Pick a random room from our list of possible rooms
-                int randomNo = rand.Range(0, possibleRooms.Count - 1);
-                List<Tuple<Vector3, List<Walls.WallTypes>>> chosenRoom = possibleRooms[randomNo];
-                foreach (Tuple<Vector3, List<Walls.WallTypes>> pos in chosenRoom)
-                {
-                    AddRoom(floor, new StandardRoom(pos.Item1, pos.Item2, Utilities.PickRandom(floor.doubleStandardRoomTemplates)));
-                }
-
-                return;
-            }
-
-            // === Create a standard room === //
-            AddRoom(floor, new StandardRoom(position, Walls.AllWalls(), Utilities.PickRandom(floor.singleStandardRoomTemplates)));
-            return;
-        }
-
-        /// <summary>
-        /// Add a room at the specified coordinate with the specified tile
-        /// </summary>
-        /// <param name="position">Tuple of Vector3 and WallType to determine how to add walls</param>
-        /// <param name="toInstantiate"></param>
-        /// <param name="cellType"></param>
-        public static Room AddRoom(Floor floor, Room room)
-        {
-            // Get x & y for cell
-            int x = Convert.ToInt32(room.vectorPosition.x);
-            int y = Convert.ToInt32(room.vectorPosition.y);
-            floor.rooms[x, y] = room;
-            return room;
-        }
-
-        /// <summary>
-        /// Add a door to every room in the floor
-        /// </summary>
-        /// <param name="floor"></param>
-        private static void AddDoors(Floor floor)
-        {
-            for (int x = 0; x < floor.floorWidth; x++)
-            {
-                for (int y = 0; y < floor.floorHeight; y++)
-                {
-                    if (floor.rooms[x, y].type != Room.RoomType.empty)
-                    {
-                        Door.AddDoor(floor.doorConfig, floor.rooms, x, y, floor.floorWidth - 1, floor.floorHeight - 1);
-                    }
-
-                    // If it's an entrance room, we need to add 2 more doors
-                    if (floor.rooms[x, y].type == Room.RoomType.entrance)
-                    {
-                        Door.AddDoor(floor.doorConfig, floor.rooms, x, y, floor.floorWidth - 1, floor.floorHeight - 1);
-                        Door.AddDoor(floor.doorConfig, floor.rooms, x, y, floor.floorWidth - 1, floor.floorHeight - 1);
-                    }
-                }
-            }
+            roomGenerator.SetupRoom(room, this.Transform, this.StartX, this.StartY);
         }
     }
 }

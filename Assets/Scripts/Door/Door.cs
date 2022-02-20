@@ -1,17 +1,39 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using rand = UnityEngine.Random;
-using System;
-using Prototype.GameGeneration.Rooms;
-
 namespace Prototype.GameGeneration
 {
+    using System;
+    using Prototype.GameGeneration.Rooms;
+    using UnityEngine;
+    using rand = UnityEngine.Random;
+
+    /// <summary>
+    /// Describes the structure of a door and the attributes of that door.
+    /// </summary>
     public class Door
     {
-        public DoorPositions position { get; set; }
-        public int doorSize { get; set; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Door"/> class.
+        /// </summary>
+        /// <param name="config">Door configuration.</param>
+        /// <param name="position">The position the door is in in the room.</param>
+        /// <param name="doorSize">Size of the door.</param>
+        public Door(DoorConfig config, DoorPositions position, int doorSize = 0)
+        {
+            this.Position = position;
 
+            if (doorSize == 0)
+            {
+                this.DoorSize = config.DefaultDoorSize;
+            }
+            else
+            {
+                this.DoorSize = doorSize;
+            }
+        }
+
+        /// <summary>
+        /// Door Positions.
+        /// Defines which wall the door appears in.
+        /// </summary>
         public enum DoorPositions
         {
             top,
@@ -20,21 +42,30 @@ namespace Prototype.GameGeneration
             bottom
         }
 
-        public Door(DoorConfig config, DoorPositions position, int doorSize = 0)
-        {
-            this.position = position;
+        /// <summary>
+        /// Gets the Door Size.
+        /// </summary>
+        /// <value>The Door Size.</value>
+        public int DoorSize { get; private set; }
 
-            if (doorSize == 0)
-            {
-                this.doorSize = config.defaultDoorSize;
-            }
-            else
-            {
-                this.doorSize = doorSize;
-            }
-        }
+        /// <summary>
+        /// Gets the door position.
+        /// </summary>
+        /// <value>The Door Position.</value>
+        public DoorPositions Position { get; private set; }
 
-        public static void AddDoor(DoorConfig config, Room[,] rooms, int roomX, int roomY, int maxX, int maxY, int retries = 0)
+        /// <summary>
+        /// Randomly chooses whether to add a door to a room based on the rooms around it.
+        /// Tries a number of times per room before giving up.
+        /// </summary>
+        /// <param name="config">Door configuration.</param>
+        /// <param name="rooms">The 2D array of rooms.</param>
+        /// <param name="roomX">X coordinate of the specific room.</param>
+        /// <param name="roomY">Y coordinate of the specific room.</param>
+        /// <param name="maxX">Maximum value of X.</param>
+        /// <param name="maxY">Maximum value of Y.</param>
+        /// <param name="retries">Number of times to try.</param>
+        public static void AddDoor(DoorConfig config, Room[,] rooms, int roomX, int roomY, int maxX, int maxY, int retries = 3)
         {
             Room room = rooms[roomX, roomY];
             int doorToUse = rand.Range(0, 3);
@@ -44,7 +75,7 @@ namespace Prototype.GameGeneration
                 Debug.Log("Could not get door position from random number");
             }
 
-            if (retries == 3)
+            if (retries == 0)
             {
                 return;
             }
@@ -55,144 +86,147 @@ namespace Prototype.GameGeneration
                     {
                         if (!CheckTopDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
                         {
-                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries + 1);
+                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries - 1);
                             break;
                         }
 
                         Door topDoor = new Door(config, DoorPositions.top);
-                        room.doors.Add(topDoor);
+                        room.Doors.Add(topDoor);
 
                         Door bottomDoor = new Door(config, DoorPositions.bottom);
-                        rooms[roomX, roomY + 1].doors.Add(bottomDoor);
+                        rooms[roomX, roomY + 1].Doors.Add(bottomDoor);
                         break;
                     }
+
                 case DoorPositions.left:
                     {
                         if (!CheckLeftDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
                         {
-                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries + 1);
+                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries - 1);
                             break;
                         }
 
                         Door leftDoor = new Door(config, DoorPositions.left);
-                        room.doors.Add(leftDoor);
+                        room.Doors.Add(leftDoor);
 
                         Door rightDoor = new Door(config, DoorPositions.right);
-                        rooms[roomX - 1, roomY].doors.Add(rightDoor);
+                        rooms[roomX - 1, roomY].Doors.Add(rightDoor);
                         break;
                     }
+
                 case DoorPositions.right:
                     {
                         if (!CheckRightDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
                         {
-                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries + 1);
+                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries - 1);
                             break;
                         }
 
                         Door rightDoor = new Door(config, DoorPositions.right);
-                        room.doors.Add(rightDoor);
+                        room.Doors.Add(rightDoor);
 
                         Door leftDoor = new Door(config, DoorPositions.left);
-                        rooms[roomX + 1, roomY].doors.Add(leftDoor);
+                        rooms[roomX + 1, roomY].Doors.Add(leftDoor);
                         break;
                     }
+
                 case DoorPositions.bottom:
                     {
                         if (!CheckBottomDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
                         {
-                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries + 1);
+                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries - 1);
                             break;
                         }
 
                         Door bottomDoor = new Door(config, DoorPositions.bottom);
-                        room.doors.Add(bottomDoor);
+                        room.Doors.Add(bottomDoor);
 
                         Door topDoor = new Door(config, DoorPositions.top);
-                        rooms[roomX, roomY - 1].doors.Add(topDoor);
+                        rooms[roomX, roomY - 1].Doors.Add(topDoor);
                         break;
                     }
             }
         }
 
         /// <summary>
-        /// Check the generic constraints that apply to all rooms
+        /// Check the constraints for placing a door at the bottom of a room.
         /// </summary>
-        /// <param name="room">The current room</param>
-        /// <param name="adjacentRoom">The room on the other side of the door</param>
-        /// <returns></returns>
-        public static bool CheckGenericConstraints(Room room, Room adjacentRoom)
+        /// <param name="room">The room in question.</param>
+        /// <param name="rooms">All the rooms.</param>
+        /// <param name="roomX">X position of the room.</param>
+        /// <param name="roomY">Y position of the room.</param>
+        /// <param name="maxX">Maximum possible X position.</param>
+        /// <param name="maxY">Maximum possible Y position.</param>
+        /// <returns>True if all constraints are met.</returns>
+        public static bool CheckBottomDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
         {
-            return adjacentRoom.type != Room.RoomType.empty &&
-                   !(room.type == Room.RoomType.entrance && adjacentRoom.type == Room.RoomType.boss) &&
-                   !(room.type == Room.RoomType.boss && adjacentRoom.type == Room.RoomType.entrance);
+            return room.VectorPosition.y > 0 &&
+                   CheckGenericConstraints(room, rooms[roomX, roomY - 1]) &&
+                   room.Walls.Contains(Walls.WallTypes.bottom);
         }
 
         /// <summary>
-        /// Check the constraints for placing a door at the top of a room.
+        /// Check the generic constraints that apply to all rooms.
         /// </summary>
-        /// <param name="room">The room in question</param>
-        /// <param name="rooms">All the rooms</param>
-        /// <param name="roomX">X position of the room</param>
-        /// <param name="roomY">Y position of the room</param>
-        /// <param name="maxX">Maximum possible X position</param>
-        /// <param name="maxY">Maximum possible Y position</param>
-        /// <returns>True if all constraints are met</returns>
-        public static bool CheckTopDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
+        /// <param name="room">The current room.</param>
+        /// <param name="adjacentRoom">The room on the other side of the door.</param>
+        /// <returns>True if all constraints are met.</returns>
+        public static bool CheckGenericConstraints(Room room, Room adjacentRoom)
         {
-            return room.vectorPosition.y < maxY &&
-                   CheckGenericConstraints(room, rooms[roomX, roomY + 1]) &&
-                   room.walls.Contains(Walls.WallTypes.top);
+            return adjacentRoom.Type != Room.RoomType.empty &&
+                   !(room.Type == Room.RoomType.entrance && adjacentRoom.Type == Room.RoomType.boss) &&
+                   !(room.Type == Room.RoomType.boss && adjacentRoom.Type == Room.RoomType.entrance);
         }
 
         /// <summary>
         /// Check the constraints for placing a door at the left of a room.
         /// </summary>
-        /// <param name="room">The room in question</param>
-        /// <param name="rooms">All the rooms</param>
-        /// <param name="roomX">X position of the room</param>
-        /// <param name="roomY">Y position of the room</param>
-        /// <param name="maxX">Maximum possible X position</param>
-        /// <param name="maxY">Maximum possible Y position</param>
-        /// <returns>True if all constraints are met</returns>
+        /// <param name="room">The room in question.</param>
+        /// <param name="rooms">All the rooms.</param>
+        /// <param name="roomX">X position of the room.</param>
+        /// <param name="roomY">Y position of the room.</param>
+        /// <param name="maxX">Maximum possible X position.</param>
+        /// <param name="maxY">Maximum possible Y position.</param>
+        /// <returns>True if all constraints are met.</returns>
         public static bool CheckLeftDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
         {
-            return room.vectorPosition.x > 0 &&
+            return room.VectorPosition.x > 0 &&
                    CheckGenericConstraints(room, rooms[roomX - 1, roomY]) &&
-                   room.walls.Contains(Walls.WallTypes.left);
+                   room.Walls.Contains(Walls.WallTypes.left);
         }
 
         /// <summary>
         /// Check the constraints for placing a door at the right of a room.
         /// </summary>
-        /// <param name="room">The room in question</param>
-        /// <param name="rooms">All the rooms</param>
-        /// <param name="roomX">X position of the room</param>
-        /// <param name="roomY">Y position of the room</param>
-        /// <param name="maxX">Maximum possible X position</param>
-        /// <param name="maxY">Maximum possible Y position</param>
-        /// <returns>True if all constraints are met</returns>
+        /// <param name="room">The room in question.</param>
+        /// <param name="rooms">All the rooms.</param>
+        /// <param name="roomX">X position of the room.</param>
+        /// <param name="roomY">Y position of the room.</param>
+        /// <param name="maxX">Maximum possible X position.</param>
+        /// <param name="maxY">Maximum possible Y position.</param>
+        /// <returns>True if all constraints are met.</returns>
         public static bool CheckRightDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
         {
-            return room.vectorPosition.x < maxX &&
+            return room.VectorPosition.x < maxX &&
                    CheckGenericConstraints(room, rooms[roomX + 1, roomY]) &&
-                   room.walls.Contains(Walls.WallTypes.right);
+                   room.Walls.Contains(Walls.WallTypes.right);
         }
 
         /// <summary>
-        /// Check the constraints for placing a door at the bottom of a room.
+        /// Check the constraints for placing a door at the top of a room.
         /// </summary>
-        /// <param name="room">The room in question</param>
-        /// <param name="rooms">All the rooms</param>
-        /// <param name="roomX">X position of the room</param>
-        /// <param name="roomY">Y position of the room</param>
-        /// <param name="maxX">Maximum possible X position</param>
-        /// <param name="maxY">Maximum possible Y position</param>
-        /// <returns>True if all constraints are met</returns>
-        public static bool CheckBottomDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
+        /// <param name="room">The room in question.</param>
+        /// <param name="rooms">All the rooms.</param>
+        /// <param name="roomX">X position of the room.</param>
+        /// <param name="roomY">Y position of the room.</param>
+        /// <param name="maxX">Maximum possible X position.</param>
+        /// <param name="maxY">Maximum possible Y position.</param>
+        /// <returns>True if all constraints are met.</returns>
+        public static bool CheckTopDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
         {
-            return room.vectorPosition.y > 0 &&
-                   CheckGenericConstraints(room, rooms[roomX, roomY - 1]) &&
-                   room.walls.Contains(Walls.WallTypes.bottom);
+            return room.VectorPosition.y < maxY &&
+                   CheckGenericConstraints(room, rooms[roomX, roomY + 1]) &&
+                   room.Walls.Contains(Walls.WallTypes.top);
         }
     }
 }

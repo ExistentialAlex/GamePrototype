@@ -1,11 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Prototype.GameGeneration
 {
+    /// <summary>
+    /// Configuration class containing constants and enumerations.
+    /// </summary>
     public static class Configuration
     {
+        /// <summary>
+        /// Exit Tag used for collision.
+        /// </summary>
+        public const string COMPONENT_TAGS_EXIT = "Exit";
+
+        /// <summary>
+        /// Stairs Tag used for collision.
+        /// </summary>
+        public const string COMPONENT_TAGS_STAIR = "Stair";
+
+        /// <summary>
+        /// Stairs Down Tag used for collision.
+        /// </summary>
+        public const string COMPONENT_TAGS_STAIR_DOWN = "Stair_Down";
+
+        /// <summary>
+        /// Input axes for use in movement.
+        /// </summary>
+        public enum InputAxes
+        {
+            Horizontal,
+            Vertical
+        }
+
+        /// <summary>
+        /// Layers available in unity.
+        /// </summary>
         public enum Layers
         {
             Default = 0,
@@ -17,6 +43,9 @@ namespace Prototype.GameGeneration
             Walls = 9
         }
 
+        /// <summary>
+        /// Sorting layers available in unity.
+        /// </summary>
         public enum SortingLayers
         {
             Default,
@@ -25,15 +54,5 @@ namespace Prototype.GameGeneration
             Units,
             Walls
         }
-
-        public enum InputAxes
-        {
-            Horizontal,
-            Vertical
-        }
-
-        public const string COMPONENT_TAGS_STAIR = "Stair";
-        public const string COMPONENT_TAGS_STAIR_DOWN = "Stair_Down";
-        public const string COMPONENT_TAGS_EXIT = "Exit";
     }
 }
