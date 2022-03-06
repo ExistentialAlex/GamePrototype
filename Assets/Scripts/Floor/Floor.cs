@@ -1,5 +1,6 @@
 namespace Prototype.GameGeneration
 {
+    using System;
     using System.Collections.Generic;
     using Prototype.GameGeneration.Rooms;
     using UnityEngine;
@@ -39,9 +40,16 @@ namespace Prototype.GameGeneration
             this.Transform = new GameObject("Floor_" + levelNo + "_" + floorNo).transform;
 
             // Create a new room
-            this.Rooms = new Room[this.FloorConfig.FloorWidth, this.FloorConfig.FloorHeight];
+            this.Cells = new Cell[this.FloorConfig.FloorWidth, this.FloorConfig.FloorHeight];
+            this.Rooms = new List<Room>();
             this.Stairs = new List<StairRoom>();
         }
+
+        /// <summary>
+        /// Gets the 2D array of rooms in the floor.
+        /// </summary>
+        /// <value>The 2D array of rooms.</value>
+        public Cell[,] Cells { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the floor contains a secret.
@@ -86,10 +94,10 @@ namespace Prototype.GameGeneration
         public int NoSecrets { get; private set; }
 
         /// <summary>
-        /// Gets the 2D array of rooms in the floor.
+        /// Gets the list of rooms to build.
         /// </summary>
-        /// <value>The 2D array of rooms.</value>
-        public Room[,] Rooms { get; private set; }
+        /// <value>The rooms to build.</value>
+        public List<Room> Rooms { get; private set; }
 
         /// <summary>
         /// Gets the list of stairs in the floor.
@@ -127,12 +135,9 @@ namespace Prototype.GameGeneration
         /// <param name="roomGenerator">The room generator.</param>
         public void InstantiateFloor(RoomGenerator roomGenerator)
         {
-            for (int x = 0; x < this.FloorConfig.FloorWidth; x++)
+            foreach (Room room in this.Rooms)
             {
-                for (int y = 0; y < this.FloorConfig.FloorHeight; y++)
-                {
-                    this.InstantiateRoom(roomGenerator, this.Rooms[x, y]);
-                }
+                this.InstantiateRoom(roomGenerator, room);
             }
         }
 

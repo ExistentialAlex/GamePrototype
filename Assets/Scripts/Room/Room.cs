@@ -3,6 +3,7 @@ namespace Prototype.GameGeneration.Rooms
     using System;
     using System.Collections.Generic;
     using UnityEngine;
+    using Utilities;
 
     /// <summary>
     /// The room structure class.
@@ -22,15 +23,15 @@ namespace Prototype.GameGeneration.Rooms
         /// <summary>
         /// Initializes a new instance of the <see cref="Room"/> class.
         /// </summary>
-        /// <param name="vectorPosition">The position of the room in 3D space.</param>
-        /// <param name="walls">List of walls in the room.</param>
-        /// <param name="template">The template or prefab the room should use.</param>
-        public Room(Vector3 vectorPosition, List<Walls.WallTypes> walls, GameObject template)
+        /// <param name="id">The room Id.</param>
+        /// <param name="drawFrom">The position to draw the room from.</param>
+        /// <param name="roomConfig">The room configuration.</param>
+        public Room(string id, Vector3 drawFrom, RoomConfig roomConfig)
         {
-            this.VectorPosition = vectorPosition;
-            this.Walls = walls;
-            this.Doors = new List<Door>();
-            this.Template = template;
+            this.Id = id;
+            this.Cells = new List<Cell>();
+            this.Template = Utilities.PickRandom(this.GetTemplatesFromRoomType(roomConfig));
+            this.DrawFrom = drawFrom;
         }
 
         /// <summary>
@@ -41,17 +42,32 @@ namespace Prototype.GameGeneration.Rooms
             entrance,
             boss,
             stair,
+            stairDown,
             empty,
-            room,
             shop,
-            secret
+            secret,
+            singleRoom,
+            doubleHorizontal,
+            doubleVertical,
+            tripleBottomLeft,
+            tripleBottomRight,
+            tripleHorizontal,
+            tripleTopLeft,
+            tripleTopRight,
+            tripleVertical,
         }
 
         /// <summary>
-        /// Gets or sets the list of doors in the room.
+        /// Gets or sets the list of cells in the room.
         /// </summary>
-        /// <value>List of doors in the room.</value>
-        public List<Door> Doors { get; set; }
+        /// <value>The list of cells.</value>
+        public List<Cell> Cells { get; set; }
+
+        /// <summary>
+        /// Gets or sets the position to draw the room from.
+        /// </summary>
+        /// <value>The position to draw from.</value>
+        public Vector3 DrawFrom { get; set; }
 
         /// <summary>
         /// Gets or sets the global vector position of the room.
@@ -60,28 +76,68 @@ namespace Prototype.GameGeneration.Rooms
         public Vector3 GlobalVectorPosition { get; set; }
 
         /// <summary>
+        /// Gets the ID of the room.
+        /// </summary>
+        /// <value>The room ID.</value>
+        public string Id { get; private set; }
+
+        /// <summary>
         /// Gets or sets the template/prefab of the room.
         /// </summary>
         /// <value>The template/prefab of the room.</value>
         public GameObject Template { get; set; }
 
         /// <summary>
-        /// Gets or sets the room type.
+        /// Gets the room type.
         /// </summary>
         /// <value>The room type.</value>
-        public RoomType Type { get; set; }
+        public virtual RoomType Type { get; }
 
         /// <summary>
-        /// Gets or sets the local vector position.
+        /// Generate a room ID based on the floor number and position of the room.
         /// </summary>
-        /// <value>The local vector position.</value>
-        public Vector3 VectorPosition { get; set; }
+        /// <param name="floorNo">Floor number.</param>
+        /// <param name="position">Position of the room.</param>
+        /// <returns>The generated ID.</returns>
+        public static string GenerateRoomId(int floorNo, Vector3 position)
+        {
+            return string.Join("_", Convert.ToString(floorNo), Convert.ToInt32(position.x), Convert.ToInt32(position.y));
+        }
 
         /// <summary>
-        /// Gets or sets the list of walls in the room.
+        /// Gets the templates for a room based on the type of room.
         /// </summary>
-        /// <value>The list of wall in the room.</value>
-        public List<Walls.WallTypes> Walls { get; set; }
+        /// <param name="roomConfig">The room config.</param>
+        /// <returns>The array of templates for that room.</returns>
+        public GameObject[] GetTemplatesFromRoomType(RoomConfig roomConfig)
+        {
+            Dictionary<RoomType, GameObject[]> dict = new Dictionary<RoomType, GameObject[]>
+            {
+                { RoomType.boss, roomConfig.BossRoomTemplates },
+                { RoomType.empty, roomConfig.EmptyRoomTemplates },
+                { RoomType.entrance, roomConfig.EntranceRoomTemplates },
+                { RoomType.secret, roomConfig.SecretRoomTemplates },
+                { RoomType.shop, roomConfig.ShopRoomTemplates },
+                { RoomType.stair, roomConfig.StairRoomTemplates },
+                { RoomType.stairDown, roomConfig.StairDownRoomTemplates },
+                { RoomType.singleRoom, roomConfig.SingleStandardRoomTemplates },
+                { RoomType.doubleHorizontal, roomConfig.DoubleStandardHorizontalRoomTemplates },
+                { RoomType.doubleVertical, roomConfig.DoubleStandardVerticalRoomTemplates },
+                { RoomType.tripleBottomLeft, roomConfig.TripleStandardBottomLeftRoomTemplates },
+                { RoomType.tripleBottomRight, roomConfig.TripleStandardBottomRightRoomTemplates },
+                { RoomType.tripleHorizontal, roomConfig.TripleStandardHorizontalRoomTemplates },
+                { RoomType.tripleTopLeft, roomConfig.TripleStandardTopLeftRoomTemplates },
+                { RoomType.tripleTopRight, roomConfig.TripleStandardTopRightRoomTemplates },
+                { RoomType.tripleVertical, roomConfig.TripleStandardVerticalRoomTemplates },
+            };
+
+            if (dict.TryGetValue(this.Type, out GameObject[] templates))
+            {
+                return templates;
+            }
+
+            throw new Exception("Could not get templates for specified Room Type: '" + Convert.ToString(this.Type) + "'");
+        }
 
         /// <summary>
         /// Converts the type of room to a string.

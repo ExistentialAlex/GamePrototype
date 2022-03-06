@@ -4,21 +4,21 @@ namespace Prototype.GameGeneration.Rooms
     using UnityEngine;
 
     /// <summary>
-    /// Empty Room class.
+    /// Double Room Vertical class.
     /// </summary>
-    public class EmptyRoom : Room
+    public class DoubleRoomVertical : Room
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EmptyRoom"/> class.
+        /// Initializes a new instance of the <see cref="DoubleRoomVertical"/> class.
         /// </summary>
         /// <param name="id">The room Id.</param>
         /// <param name="drawFrom">The position to draw the room from.</param>
         /// <param name="roomConfig">The room configuration.</param>
-        public EmptyRoom(string id, Vector3 drawFrom, RoomConfig roomConfig) : base(id, drawFrom, roomConfig)
+        public DoubleRoomVertical(string id, Vector3 drawFrom, RoomConfig roomConfig) : base(id, drawFrom, roomConfig)
         {
         }
 
         /// <inheritdoc/>
-        public override RoomType Type { get => RoomType.empty; }
+        public override RoomType Type { get => RoomType.doubleVertical; }
     }
 }

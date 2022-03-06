@@ -18,13 +18,19 @@ namespace Prototype.GameGeneration
         /// </summary>
         /// <param name="floor">The floor to add the room to.</param>
         /// <param name="room">The room to add.</param>
+        /// <param name="cells">List of cells in that room.</param>
         /// <returns>The room that was added.</returns>
-        public static Room AddRoom(Floor floor, Room room)
+        public static Room AddRoom(Floor floor, Room room, List<Cell> cells)
         {
-            // Get x & y for cell
-            int x = Convert.ToInt32(room.VectorPosition.x);
-            int y = Convert.ToInt32(room.VectorPosition.y);
-            floor.Rooms[x, y] = room;
+            foreach (Cell cell in cells)
+            {
+                // Get x & y for cell
+                int x = Convert.ToInt32(cell.VectorPosition.x);
+                int y = Convert.ToInt32(cell.VectorPosition.y);
+                floor.Cells[x, y] = cell;
+            }
+
+            floor.Rooms.Add(room);
             return room;
         }
 
@@ -36,23 +42,19 @@ namespace Prototype.GameGeneration
         /// <param name="position">The starting position.</param>
         public static void AddStandardRoom(Floor floor, Vector3 position)
         {
-            List<List<Tuple<Vector3, List<Walls.WallTypes>>>> possibleRooms = new List<List<Tuple<Vector3, List<Walls.WallTypes>>>>();
+            List<Tuple<Vector3, List<Cell>, Room.RoomType>> possibleRooms = new List<Tuple<Vector3, List<Cell>, Room.RoomType>>();
+            string roomId = Room.GenerateRoomId(floor.FloorNo, position);
 
             // === Create a Room of Size 3 === //
             if (Convert.ToBoolean(rand.Range(0, 2)) && floor.Current3Rooms < floor.FloorConfig.Max3Rooms)
             {
-                possibleRooms.AddRange(Rooms.Rooms.GetPossibleSize3Rooms(position, floor.Rooms, floor.FloorConfig.FloorWidth, floor.FloorConfig.FloorHeight));
+                possibleRooms.AddRange(Rooms.Rooms.GetPossibleSize3Rooms(position, floor, roomId));
             }
 
             if (possibleRooms.Count > 0)
             {
-                // Pick a random room from our list of possible rooms
-                int randomNo = rand.Range(0, possibleRooms.Count - 1);
-                List<Tuple<Vector3, List<Walls.WallTypes>>> chosenRoom = possibleRooms[randomNo];
-                foreach (Tuple<Vector3, List<Walls.WallTypes>> pos in chosenRoom)
-                {
-                    AddRoom(floor, new StandardRoom(pos.Item1, pos.Item2, Utilities.PickRandom(floor.FloorConfig.TripleStandardRoomTemplates)));
-                }
+                Tuple<Vector3, List<Cell>, Room.RoomType> chosenRoom = Utilities.PickRandom(possibleRooms.ToArray());
+                AddRoom(floor, Rooms.Rooms.CreateRoomFromType(chosenRoom.Item3, roomId, chosenRoom.Item1, floor.FloorConfig.RoomConfig), chosenRoom.Item2);
 
                 // Increment the number of size 3 rooms
                 floor.Current3Rooms++;
@@ -61,23 +63,29 @@ namespace Prototype.GameGeneration
             }
 
             // === Room of Size 2 === //
-            possibleRooms.AddRange(Rooms.Rooms.GetPossibleSize2Rooms(position, floor.Rooms, floor.FloorConfig.FloorWidth, floor.FloorConfig.FloorHeight));
+            possibleRooms.AddRange(Rooms.Rooms.GetPossibleSize2Rooms(position, floor, roomId));
 
             if (possibleRooms.Count > 0)
             {
                 // Pick a random room from our list of possible rooms
-                int randomNo = rand.Range(0, possibleRooms.Count - 1);
-                List<Tuple<Vector3, List<Walls.WallTypes>>> chosenRoom = possibleRooms[randomNo];
-                foreach (Tuple<Vector3, List<Walls.WallTypes>> pos in chosenRoom)
-                {
-                    AddRoom(floor, new StandardRoom(pos.Item1, pos.Item2, Utilities.PickRandom(floor.FloorConfig.DoubleStandardRoomTemplates)));
-                }
+                Tuple<Vector3, List<Cell>, Room.RoomType> chosenRoom = Utilities.PickRandom(possibleRooms.ToArray());
+                AddRoom(floor, Rooms.Rooms.CreateRoomFromType(chosenRoom.Item3, roomId, chosenRoom.Item1, floor.FloorConfig.RoomConfig), chosenRoom.Item2);
 
                 return;
             }
 
             // === Create a standard room === //
-            AddRoom(floor, new StandardRoom(position, Walls.AllWalls(), Utilities.PickRandom(floor.FloorConfig.SingleStandardRoomTemplates)));
+            AddRoom(
+                floor,
+                new StandardRoom(
+                    roomId,
+                    position,
+                    floor.FloorConfig.RoomConfig),
+                    new List<Cell>
+                    {
+                        new Cell(position, roomId, Room.RoomType.singleRoom, Walls.AllWalls())
+                    });
+
             return;
         }
 
@@ -90,7 +98,7 @@ namespace Prototype.GameGeneration
         public static bool AreAnyAdjacentRoomsPopulated(Floor floor, Vector3 position)
         {
             // if < 8, then at least one room populated
-            return Rooms.Rooms.GetUnpopulatedAdjacentRooms(position, floor.Rooms, floor.FloorConfig.FloorWidth, floor.FloorConfig.FloorHeight).Count < 8;
+            return Rooms.Rooms.GetUnpopulatedAdjacentRooms(position, floor.Cells, floor.FloorConfig.FloorWidth, floor.FloorConfig.FloorHeight).Count < 8;
         }
 
         /// <summary>
@@ -139,7 +147,7 @@ namespace Prototype.GameGeneration
             {
                 for (int y = 0; y < floor.FloorConfig.FloorHeight; y++)
                 {
-                    if (floor.Rooms[x, y] == null)
+                    if (floor.Cells[x, y] == null)
                     {
                         AddStandardRoom(floor, new Vector3(x, y, 0f));
                     }
@@ -148,6 +156,8 @@ namespace Prototype.GameGeneration
 
             // Add a door to each room
             AddDoors(floor);
+
+            AssignCellsToRooms(floor);
         }
 
         /// <summary>
@@ -163,7 +173,7 @@ namespace Prototype.GameGeneration
                 x = rand.Range(0, floor.FloorConfig.FloorWidth);
                 y = rand.Range(0, floor.FloorConfig.FloorHeight);
             }
-            while (floor.Rooms[x, y] != null);
+            while (floor.Cells[x, y] != null);
         }
 
         /// <summary>
@@ -175,12 +185,16 @@ namespace Prototype.GameGeneration
             Debug.Log("=== Adding Boss Room ===");
             int x = rand.Range(0, floor.FloorConfig.FloorWidth - 1); // will never be last column or row
             int y = rand.Range(0, floor.FloorConfig.FloorHeight - 1);
+            string roomId = Room.GenerateRoomId(floor.FloorNo, new Vector3(x, y, 0f));
+            List<Cell> cells = new List<Cell>
+            {
+                new Cell(new Vector3(x, y, 0f), roomId, Room.RoomType.boss, Walls.BottomLeftCorner()),
+                new Cell(new Vector3(x + 1, y, 0f), roomId, Room.RoomType.boss, Walls.BottomRightCorner()),
+                new Cell(new Vector3(x, y + 1, 0f), roomId, Room.RoomType.boss, Walls.TopLeftCorner()),
+                new Cell(new Vector3(x + 1, y + 1, 0f), roomId, Room.RoomType.boss, Walls.TopRightCorner()),
+            };
 
-            // TODO - Update boss rooms to pick from list of full boss rooms.
-            AddRoom(floor, new BossRoom(new Vector3(x, y, 0f), Walls.BottomLeftCorner(), floor.FloorConfig.BossRoomTemplates[0]));
-            AddRoom(floor, new BossRoom(new Vector3(x + 1, y, 0f), Walls.BottomRightCorner(), floor.FloorConfig.BossRoomTemplates[1]));
-            AddRoom(floor, new BossRoom(new Vector3(x, y + 1, 0f), Walls.TopLeftCorner(), floor.FloorConfig.BossRoomTemplates[2]));
-            AddRoom(floor, new BossRoom(new Vector3(x + 1, y + 1, 0f), Walls.TopRightCorner(), floor.FloorConfig.BossRoomTemplates[3]));
+            AddRoom(floor, new BossRoom(roomId, new Vector3(x, y, 0f), floor.FloorConfig.RoomConfig), cells);
         }
 
         /// <summary>
@@ -193,16 +207,16 @@ namespace Prototype.GameGeneration
             {
                 for (int y = 0; y < floor.FloorConfig.FloorHeight; y++)
                 {
-                    if (floor.Rooms[x, y].Type != Room.RoomType.empty)
+                    if (floor.Cells[x, y].ParentRoomType != Room.RoomType.empty)
                     {
-                        Door.AddDoor(floor.FloorConfig.DoorConfig, floor.Rooms, x, y, floor.FloorConfig.FloorWidth - 1, floor.FloorConfig.FloorHeight - 1);
+                        Door.AddDoor(floor.FloorConfig.DoorConfig, floor.Cells, x, y, floor.FloorConfig.FloorWidth - 1, floor.FloorConfig.FloorHeight - 1);
                     }
 
                     // If it's an entrance room, we need to add 2 more doors
-                    if (floor.Rooms[x, y].Type == Room.RoomType.entrance)
+                    if (floor.Cells[x, y].ParentRoomType == Room.RoomType.entrance)
                     {
-                        Door.AddDoor(floor.FloorConfig.DoorConfig, floor.Rooms, x, y, floor.FloorConfig.FloorWidth - 1, floor.FloorConfig.FloorHeight - 1);
-                        Door.AddDoor(floor.FloorConfig.DoorConfig, floor.Rooms, x, y, floor.FloorConfig.FloorWidth - 1, floor.FloorConfig.FloorHeight - 1);
+                        Door.AddDoor(floor.FloorConfig.DoorConfig, floor.Cells, x, y, floor.FloorConfig.FloorWidth - 1, floor.FloorConfig.FloorHeight - 1);
+                        Door.AddDoor(floor.FloorConfig.DoorConfig, floor.Cells, x, y, floor.FloorConfig.FloorWidth - 1, floor.FloorConfig.FloorHeight - 1);
                     }
                 }
             }
@@ -231,7 +245,15 @@ namespace Prototype.GameGeneration
                     }
                 }
 
-                AddRoom(floor, new EmptyRoom(new Vector3(finalX, finalY, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.FloorConfig.EmptyRoomTemplates)));
+                Vector3 finalVector = new Vector3(finalX, finalY, 0f);
+                string roomId = Room.GenerateRoomId(floor.FloorNo, finalVector);
+
+                List<Cell> cells = new List<Cell>
+                {
+                    new Cell(finalVector, roomId, Room.RoomType.empty, Walls.AllWalls()),
+                };
+
+                AddRoom(floor, new EmptyRoom(roomId, finalVector, floor.FloorConfig.RoomConfig), cells);
             }
         }
 
@@ -243,7 +265,15 @@ namespace Prototype.GameGeneration
         {
             Debug.Log("=== Adding Entrance Room ===");
             GetRandomEmptyRoom(floor, out int x, out int y);
-            AddRoom(floor, new EntranceRoom(new Vector3(x, y, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.FloorConfig.EntranceRoomTemplates)));
+            Vector3 vectorPosition = new Vector3(x, y, 0f);
+            string roomId = Room.GenerateRoomId(floor.FloorNo, vectorPosition);
+
+            List<Cell> cells = new List<Cell>()
+            {
+                new Cell(vectorPosition, roomId, Room.RoomType.entrance, Walls.AllWalls()),
+            };
+
+            AddRoom(floor, new EntranceRoom(roomId, vectorPosition, floor.FloorConfig.RoomConfig), cells);
         }
 
         /// <summary>
@@ -256,7 +286,15 @@ namespace Prototype.GameGeneration
             for (int i = 0; i < floor.NoSecrets; i++)
             {
                 GetRandomEmptyRoom(floor, out int x, out int y);
-                AddRoom(floor, new SecretRoom(new Vector3(x, y, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.FloorConfig.SecretRoomTemplates)));
+                Vector3 vectorPosition = new Vector3(x, y, 0f);
+                string roomId = Room.GenerateRoomId(floor.FloorNo, vectorPosition);
+
+                List<Cell> cells = new List<Cell>()
+                {
+                    new Cell(vectorPosition, roomId, Room.RoomType.secret, Walls.AllWalls()),
+                };
+
+                AddRoom(floor, new SecretRoom(roomId, vectorPosition, floor.FloorConfig.RoomConfig), cells);
             }
         }
 
@@ -268,18 +306,51 @@ namespace Prototype.GameGeneration
         {
             Debug.Log("=== Adding Shop ===");
             GetRandomEmptyRoom(floor, out int x, out int y);
-            AddRoom(floor, new ShopRoom(new Vector3(x, y, 0f), Walls.AllWalls(), Utilities.PickRandom(floor.FloorConfig.ShopRoomTemplates)));
+            Vector3 vectorPosition = new Vector3(x, y, 0f);
+            string roomId = Room.GenerateRoomId(floor.FloorNo, vectorPosition);
+
+            List<Cell> cells = new List<Cell>()
+            {
+                new Cell(vectorPosition, roomId, Room.RoomType.shop, Walls.AllWalls()),
+            };
+
+            AddRoom(floor, new ShopRoom(roomId, vectorPosition, floor.FloorConfig.RoomConfig), cells);
         }
 
         /// <summary>
         /// Add a stair to the floor with a specific template.
         /// </summary>
         /// <param name="floor">The floor to add the stair to.</param>
-        /// <param name="template">The template to use when instantiating the stair.</param>
-        private static void AddStair(Floor floor, GameObject template)
+        private static void AddStair(Floor floor)
         {
             GetRandomEmptyRoom(floor, out int x, out int y);
-            floor.Stairs.Add((StairRoom)AddRoom(floor, new StairRoom(new Vector3(x, y, 0f), Walls.AllWalls(), template)));
+            Vector3 vectorPosition = new Vector3(x, y, 0f);
+            string roomId = Room.GenerateRoomId(floor.FloorNo, vectorPosition);
+
+            List<Cell> cells = new List<Cell>()
+            {
+                new Cell(vectorPosition, roomId, Room.RoomType.stair, Walls.AllWalls()),
+            };
+
+            floor.Stairs.Add((StairRoom)AddRoom(floor, new StairRoom(roomId, vectorPosition, floor.FloorConfig.RoomConfig), cells));
+        }
+
+        /// <summary>
+        /// Add a stair down to the floor.
+        /// </summary>
+        /// <param name="floor">The floor to add the stair to.</param>
+        private static void AddStairDown(Floor floor)
+        {
+            GetRandomEmptyRoom(floor, out int x, out int y);
+            Vector3 vectorPosition = new Vector3(x, y, 0f);
+            string roomId = Room.GenerateRoomId(floor.FloorNo, vectorPosition);
+
+            List<Cell> cells = new List<Cell>()
+            {
+                new Cell(vectorPosition, roomId, Room.RoomType.stairDown, Walls.AllWalls()),
+            };
+
+            floor.Stairs.Add((StairRoom)AddRoom(floor, new StairDownRoom(roomId, vectorPosition, floor.FloorConfig.RoomConfig), cells));
         }
 
         /// <summary>
@@ -291,17 +362,39 @@ namespace Prototype.GameGeneration
             Debug.Log("=== Adding Stairs ===");
             if (floor.FloorNo == 0)
             {
-                AddStair(floor, Utilities.PickRandom(floor.FloorConfig.StairRoomTemplates));
+                AddStair(floor);
             }
             else if (floor.FloorNo == floor.LevelNo)
             {
-                AddStair(floor, Utilities.PickRandom(floor.FloorConfig.StairDownRoomTemplates));
+                AddStairDown(floor);
             }
             else
             {
                 // If it's a middle floor, add 2 stairs
-                AddStair(floor, Utilities.PickRandom(floor.FloorConfig.StairRoomTemplates));
-                AddStair(floor, Utilities.PickRandom(floor.FloorConfig.StairDownRoomTemplates));
+                AddStair(floor);
+                AddStairDown(floor);
+            }
+        }
+
+        /// <summary>
+        /// Assign the cells in the floor to the corresponding room.
+        /// </summary>
+        /// <param name="floor">The floor.</param>
+        private static void AssignCellsToRooms(Floor floor)
+        {
+            foreach (Room room in floor.Rooms)
+            {
+                for (int x = 0; x < floor.FloorConfig.FloorWidth; x++)
+                {
+                    for (int y = 0; y < floor.FloorConfig.FloorWidth; y++)
+                    {
+                        Cell cell = floor.Cells[x, y];
+                        if (cell.ParentId == room.Id)
+                        {
+                            room.Cells.Add(cell);
+                        }
+                    }
+                }
             }
         }
     }

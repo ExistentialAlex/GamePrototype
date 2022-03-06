@@ -126,6 +126,7 @@ namespace Prototype.GameGeneration
         /// </summary>
         public void GameOver()
         {
+            Debug.Log("Game Over!");
             this.enabled = false;
             this.PlayerReady = false;
             return;

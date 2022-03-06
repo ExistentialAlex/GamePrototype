@@ -1,5 +1,6 @@
 namespace Prototype.GameGeneration
 {
+    using Prototype.GameGeneration.Rooms;
     using UnityEngine;
 
     /// <summary>
@@ -8,34 +9,10 @@ namespace Prototype.GameGeneration
     public class FloorConfig : MonoBehaviour
     {
         /// <summary>
-        /// Templates for the boss room.
-        /// </summary>
-        [SerializeField]
-        private GameObject[] bossRoomTemplates;
-
-        /// <summary>
-        /// Templates for the double standard room.
-        /// </summary>
-        [SerializeField]
-        private GameObject[] doubleStandardRoomTemplates;
-
-        /// <summary>
         /// Number of empty rooms per floor.
         /// </summary>
         [SerializeField]
         private int emptyRooms;
-
-        /// <summary>
-        /// Templates for the empty rooms.
-        /// </summary>
-        [SerializeField]
-        private GameObject[] emptyRoomTemplates;
-
-        /// <summary>
-        /// Templates for the entrance rooms.
-        /// </summary>
-        [SerializeField]
-        private GameObject[] entranceRoomTemplates;
 
         /// <summary>
         /// Floor Height.
@@ -56,66 +33,10 @@ namespace Prototype.GameGeneration
         private int max3Rooms = 3;
 
         /// <summary>
-        /// Templates for the secret rooms.
-        /// </summary>
-        [SerializeField]
-        private GameObject[] secretRoomTemplates;
-
-        /// <summary>
-        /// Templates for the shop rooms.
-        /// </summary>
-        [SerializeField]
-        private GameObject[] shopRoomTemplates;
-
-        /// <summary>
-        /// Templates for the single standard rooms.
-        /// </summary>
-        [SerializeField]
-        private GameObject[] singleStandardRoomTemplates;
-
-        /// <summary>
-        /// Templates for the stair down rooms.
-        /// </summary>
-        [SerializeField]
-        private GameObject[] stairDownRoomTemplates;
-
-        /// <summary>
-        /// Templates for the stair rooms.
-        /// </summary>
-        [SerializeField]
-        private GameObject[] stairRoomTemplates;
-
-        /// <summary>
-        /// Templates for the triple standard rooms.
-        /// </summary>
-        [SerializeField]
-        private GameObject[] tripleStandardRoomTemplates;
-
-        /// <summary>
-        /// Gets the boss room templates.
-        /// </summary>
-        /// <value>Boss room templates.</value>
-        public GameObject[] BossRoomTemplates
-        {
-            get => this.bossRoomTemplates;
-            private set => this.bossRoomTemplates = value;
-        }
-
-        /// <summary>
         /// Gets the Door configuration.
         /// </summary>
         /// <value>The door configuration.</value>
         public DoorConfig DoorConfig { get; private set; }
-
-        /// <summary>
-        /// Gets the double standard room templates.
-        /// </summary>
-        /// <value>The double standard room templates.</value>
-        public GameObject[] DoubleStandardRoomTemplates
-        {
-            get => this.doubleStandardRoomTemplates;
-            private set => this.doubleStandardRoomTemplates = value;
-        }
 
         /// <summary>
         /// Gets the total number of empty rooms possible for the floor.
@@ -125,26 +46,6 @@ namespace Prototype.GameGeneration
         {
             get => this.emptyRooms;
             private set => this.emptyRooms = value;
-        }
-
-        /// <summary>
-        /// Gets the empty room templates.
-        /// </summary>
-        /// <value>The empty room templates.</value>
-        public GameObject[] EmptyRoomTemplates
-        {
-            get => this.emptyRoomTemplates;
-            private set => this.emptyRoomTemplates = value;
-        }
-
-        /// <summary>
-        /// Gets the entrance room templates.
-        /// </summary>
-        /// <value>The entrance room templates.</value>
-        public GameObject[] EntranceRoomTemplates
-        {
-            get => this.entranceRoomTemplates;
-            private set => this.entranceRoomTemplates = value;
         }
 
         /// <summary>
@@ -178,64 +79,10 @@ namespace Prototype.GameGeneration
         }
 
         /// <summary>
-        /// Gets the secret room templates.
+        /// Gets the room config for the floor config.
         /// </summary>
-        /// <value>The secret room templates.</value>
-        public GameObject[] SecretRoomTemplates
-        {
-            get => this.secretRoomTemplates;
-            private set => this.secretRoomTemplates = value;
-        }
-
-        /// <summary>
-        /// Gets the shop room templates.
-        /// </summary>
-        /// <value>The shop room templates.</value>
-        public GameObject[] ShopRoomTemplates
-        {
-            get => this.shopRoomTemplates;
-            private set => this.shopRoomTemplates = value;
-        }
-
-        /// <summary>
-        /// Gets the single standard room templates.
-        /// </summary>
-        /// <value>The single standard room templates.</value>
-        public GameObject[] SingleStandardRoomTemplates
-        {
-            get => this.singleStandardRoomTemplates;
-            private set => this.singleStandardRoomTemplates = value;
-        }
-
-        /// <summary>
-        /// Gets the stair down room templates.
-        /// </summary>
-        /// <value>The stair down room templates.</value>
-        public GameObject[] StairDownRoomTemplates
-        {
-            get => this.stairDownRoomTemplates;
-            private set => this.stairDownRoomTemplates = value;
-        }
-
-        /// <summary>
-        /// Gets the stair room templates.
-        /// </summary>
-        /// <value>The stair room templates.</value>
-        public GameObject[] StairRoomTemplates
-        {
-            get => this.stairRoomTemplates;
-            private set => this.stairRoomTemplates = value;
-        }
-
-        /// <summary>
-        /// Gets the triple standard room templates.
-        /// </summary>
-        /// <value>The triple standard room templates.</value>
-        public GameObject[] TripleStandardRoomTemplates
-        {
-            get => this.tripleStandardRoomTemplates;
-            private set => this.tripleStandardRoomTemplates = value;
-        }
+        /// <value>The room config.</value>
+        public RoomConfig RoomConfig { get; private set; }
 
         /// <summary>
         /// Get the Door Config Component.
@@ -243,6 +90,7 @@ namespace Prototype.GameGeneration
         public void GetDoorConfig()
         {
             DoorConfig = this.GetComponent<DoorConfig>();
+            RoomConfig = this.GetComponent<RoomConfig>();
         }
     }
 }

@@ -59,15 +59,15 @@ namespace Prototype.GameGeneration
         /// Tries a number of times per room before giving up.
         /// </summary>
         /// <param name="config">Door configuration.</param>
-        /// <param name="rooms">The 2D array of rooms.</param>
-        /// <param name="roomX">X coordinate of the specific room.</param>
-        /// <param name="roomY">Y coordinate of the specific room.</param>
+        /// <param name="cells">The 2D array of cells.</param>
+        /// <param name="cellX">X coordinate of the specific cell.</param>
+        /// <param name="cellY">Y coordinate of the specific room.</param>
         /// <param name="maxX">Maximum value of X.</param>
         /// <param name="maxY">Maximum value of Y.</param>
         /// <param name="retries">Number of times to try.</param>
-        public static void AddDoor(DoorConfig config, Room[,] rooms, int roomX, int roomY, int maxX, int maxY, int retries = 3)
+        public static void AddDoor(DoorConfig config, Cell[,] cells, int cellX, int cellY, int maxX, int maxY, int retries = 4)
         {
-            Room room = rooms[roomX, roomY];
+            Cell cell = cells[cellX, cellY];
             int doorToUse = rand.Range(0, 3);
 
             if (!Enum.TryParse(Convert.ToString(doorToUse), out DoorPositions position))
@@ -84,149 +84,149 @@ namespace Prototype.GameGeneration
             {
                 case DoorPositions.top:
                     {
-                        if (!CheckTopDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
+                        if (!CheckTopDoorConstraints(cell, cells, cellX, cellY, maxX, maxY))
                         {
-                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries - 1);
+                            AddDoor(config, cells, cellX, cellY, maxX, maxY, retries - 1);
                             break;
                         }
 
                         Door topDoor = new Door(config, DoorPositions.top);
-                        room.Doors.Add(topDoor);
+                        cell.Doors.Add(topDoor);
 
                         Door bottomDoor = new Door(config, DoorPositions.bottom);
-                        rooms[roomX, roomY + 1].Doors.Add(bottomDoor);
+                        cells[cellX, cellY + 1].Doors.Add(bottomDoor);
                         break;
                     }
 
                 case DoorPositions.left:
                     {
-                        if (!CheckLeftDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
+                        if (!CheckLeftDoorConstraints(cell, cells, cellX, cellY, maxX, maxY))
                         {
-                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries - 1);
+                            AddDoor(config, cells, cellX, cellY, maxX, maxY, retries - 1);
                             break;
                         }
 
                         Door leftDoor = new Door(config, DoorPositions.left);
-                        room.Doors.Add(leftDoor);
+                        cell.Doors.Add(leftDoor);
 
                         Door rightDoor = new Door(config, DoorPositions.right);
-                        rooms[roomX - 1, roomY].Doors.Add(rightDoor);
+                        cells[cellX - 1, cellY].Doors.Add(rightDoor);
                         break;
                     }
 
                 case DoorPositions.right:
                     {
-                        if (!CheckRightDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
+                        if (!CheckRightDoorConstraints(cell, cells, cellX, cellY, maxX, maxY))
                         {
-                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries - 1);
+                            AddDoor(config, cells, cellX, cellY, maxX, maxY, retries - 1);
                             break;
                         }
 
                         Door rightDoor = new Door(config, DoorPositions.right);
-                        room.Doors.Add(rightDoor);
+                        cell.Doors.Add(rightDoor);
 
                         Door leftDoor = new Door(config, DoorPositions.left);
-                        rooms[roomX + 1, roomY].Doors.Add(leftDoor);
+                        cells[cellX + 1, cellY].Doors.Add(leftDoor);
                         break;
                     }
 
                 case DoorPositions.bottom:
                     {
-                        if (!CheckBottomDoorConstraints(room, rooms, roomX, roomY, maxX, maxY))
+                        if (!CheckBottomDoorConstraints(cell, cells, cellX, cellY, maxX, maxY))
                         {
-                            AddDoor(config, rooms, roomX, roomY, maxX, maxY, retries - 1);
+                            AddDoor(config, cells, cellX, cellY, maxX, maxY, retries - 1);
                             break;
                         }
 
                         Door bottomDoor = new Door(config, DoorPositions.bottom);
-                        room.Doors.Add(bottomDoor);
+                        cell.Doors.Add(bottomDoor);
 
                         Door topDoor = new Door(config, DoorPositions.top);
-                        rooms[roomX, roomY - 1].Doors.Add(topDoor);
+                        cells[cellX, cellY - 1].Doors.Add(topDoor);
                         break;
                     }
             }
         }
 
         /// <summary>
-        /// Check the constraints for placing a door at the bottom of a room.
+        /// Check the constraints for placing a door at the bottom of a cell.
         /// </summary>
-        /// <param name="room">The room in question.</param>
-        /// <param name="rooms">All the rooms.</param>
-        /// <param name="roomX">X position of the room.</param>
-        /// <param name="roomY">Y position of the room.</param>
+        /// <param name="cell">The room in question.</param>
+        /// <param name="cells">All the rooms.</param>
+        /// <param name="cellX">X position of the cell.</param>
+        /// <param name="cellY">Y position of the cell.</param>
         /// <param name="maxX">Maximum possible X position.</param>
         /// <param name="maxY">Maximum possible Y position.</param>
         /// <returns>True if all constraints are met.</returns>
-        public static bool CheckBottomDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
+        public static bool CheckBottomDoorConstraints(Cell cell, Cell[,] cells, int cellX, int cellY, int maxX, int maxY)
         {
-            return room.VectorPosition.y > 0 &&
-                   CheckGenericConstraints(room, rooms[roomX, roomY - 1]) &&
-                   room.Walls.Contains(Walls.WallTypes.bottom);
+            return cell.VectorPosition.y > 0 &&
+                   CheckGenericConstraints(cell, cells[cellX, cellY - 1]) &&
+                   cell.Walls.Contains(Walls.WallTypes.bottom);
         }
 
         /// <summary>
-        /// Check the generic constraints that apply to all rooms.
+        /// Check the generic constraints that apply to all cells.
         /// </summary>
-        /// <param name="room">The current room.</param>
-        /// <param name="adjacentRoom">The room on the other side of the door.</param>
+        /// <param name="cell">The current cell.</param>
+        /// <param name="adjacentCell">The cell on the other side of the door.</param>
         /// <returns>True if all constraints are met.</returns>
-        public static bool CheckGenericConstraints(Room room, Room adjacentRoom)
+        public static bool CheckGenericConstraints(Cell cell, Cell adjacentCell)
         {
-            return adjacentRoom.Type != Room.RoomType.empty &&
-                   !(room.Type == Room.RoomType.entrance && adjacentRoom.Type == Room.RoomType.boss) &&
-                   !(room.Type == Room.RoomType.boss && adjacentRoom.Type == Room.RoomType.entrance);
+            return adjacentCell.ParentRoomType != Room.RoomType.empty &&
+                   !(cell.ParentRoomType == Room.RoomType.entrance && adjacentCell.ParentRoomType == Room.RoomType.boss) &&
+                   !(cell.ParentRoomType == Room.RoomType.boss && adjacentCell.ParentRoomType == Room.RoomType.entrance);
         }
 
         /// <summary>
-        /// Check the constraints for placing a door at the left of a room.
+        /// Check the constraints for placing a door at the left of a cell.
         /// </summary>
-        /// <param name="room">The room in question.</param>
-        /// <param name="rooms">All the rooms.</param>
-        /// <param name="roomX">X position of the room.</param>
-        /// <param name="roomY">Y position of the room.</param>
+        /// <param name="cell">The cell in question.</param>
+        /// <param name="cells">All the cells.</param>
+        /// <param name="cellX">X position of the cell.</param>
+        /// <param name="cellY">Y position of the cell.</param>
         /// <param name="maxX">Maximum possible X position.</param>
         /// <param name="maxY">Maximum possible Y position.</param>
         /// <returns>True if all constraints are met.</returns>
-        public static bool CheckLeftDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
+        public static bool CheckLeftDoorConstraints(Cell cell, Cell[,] cells, int cellX, int cellY, int maxX, int maxY)
         {
-            return room.VectorPosition.x > 0 &&
-                   CheckGenericConstraints(room, rooms[roomX - 1, roomY]) &&
-                   room.Walls.Contains(Walls.WallTypes.left);
+            return cell.VectorPosition.x > 0 &&
+                   CheckGenericConstraints(cell, cells[cellX - 1, cellY]) &&
+                   cell.Walls.Contains(Walls.WallTypes.left);
         }
 
         /// <summary>
-        /// Check the constraints for placing a door at the right of a room.
+        /// Check the constraints for placing a door at the right of a cell.
         /// </summary>
-        /// <param name="room">The room in question.</param>
-        /// <param name="rooms">All the rooms.</param>
-        /// <param name="roomX">X position of the room.</param>
-        /// <param name="roomY">Y position of the room.</param>
+        /// <param name="cell">The cell in question.</param>
+        /// <param name="cells">All the cells.</param>
+        /// <param name="cellX">X position of the cell.</param>
+        /// <param name="cellY">Y position of the cell.</param>
         /// <param name="maxX">Maximum possible X position.</param>
         /// <param name="maxY">Maximum possible Y position.</param>
         /// <returns>True if all constraints are met.</returns>
-        public static bool CheckRightDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
+        public static bool CheckRightDoorConstraints(Cell cell, Cell[,] cells, int cellX, int cellY, int maxX, int maxY)
         {
-            return room.VectorPosition.x < maxX &&
-                   CheckGenericConstraints(room, rooms[roomX + 1, roomY]) &&
-                   room.Walls.Contains(Walls.WallTypes.right);
+            return cell.VectorPosition.x < maxX &&
+                   CheckGenericConstraints(cell, cells[cellX + 1, cellY]) &&
+                   cell.Walls.Contains(Walls.WallTypes.right);
         }
 
         /// <summary>
-        /// Check the constraints for placing a door at the top of a room.
+        /// Check the constraints for placing a door at the top of a cell.
         /// </summary>
-        /// <param name="room">The room in question.</param>
-        /// <param name="rooms">All the rooms.</param>
-        /// <param name="roomX">X position of the room.</param>
-        /// <param name="roomY">Y position of the room.</param>
+        /// <param name="cell">The cell in question.</param>
+        /// <param name="cells">All the cells.</param>
+        /// <param name="cellX">X position of the cell.</param>
+        /// <param name="cellY">Y position of the cell.</param>
         /// <param name="maxX">Maximum possible X position.</param>
         /// <param name="maxY">Maximum possible Y position.</param>
         /// <returns>True if all constraints are met.</returns>
-        public static bool CheckTopDoorConstraints(Room room, Room[,] rooms, int roomX, int roomY, int maxX, int maxY)
+        public static bool CheckTopDoorConstraints(Cell cell, Cell[,] cells, int cellX, int cellY, int maxX, int maxY)
         {
-            return room.VectorPosition.y < maxY &&
-                   CheckGenericConstraints(room, rooms[roomX, roomY + 1]) &&
-                   room.Walls.Contains(Walls.WallTypes.top);
+            return cell.VectorPosition.y < maxY &&
+                   CheckGenericConstraints(cell, cells[cellX, cellY + 1]) &&
+                   cell.Walls.Contains(Walls.WallTypes.top);
         }
     }
 }

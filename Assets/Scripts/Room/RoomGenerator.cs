@@ -42,18 +42,6 @@ namespace Prototype.GameGeneration.Rooms
         }
 
         /// <summary>
-        /// Gets or sets the maximum X value.
-        /// </summary>
-        /// <value>The maximum value of X.</value>
-        private int MaxX { get; set; }
-
-        /// <summary>
-        /// Gets or sets the maximum Y value.
-        /// </summary>
-        /// <value>The maximum value of Y.</value>
-        private int MaxY { get; set; }
-
-        /// <summary>
         /// Gets or sets the player position.
         /// </summary>
         /// <value>The player position.</value>
@@ -111,19 +99,28 @@ namespace Prototype.GameGeneration.Rooms
         /// <param name="floorStartY">The global Y start position.</param>
         public void SetupRoom(Room room, Transform transform, int floorStartX, int floorStartY)
         {
-            this.RelativeStartX = Convert.ToInt32((Room.RoomWidth + this.WallWidth) * room.VectorPosition.x) + floorStartX;
-            this.RelativeStartY = Convert.ToInt32((Room.RoomHeight + this.WallWidth) * room.VectorPosition.y) + floorStartY;
+            Vector3 relativeStartVector = GetRelativeVectorPosition(room.DrawFrom, floorStartX, floorStartY);
 
-            room.GlobalVectorPosition = new Vector3(this.RelativeStartX, this.RelativeStartY, 0f);
+            this.RelativeStartX = Convert.ToInt32(relativeStartVector.x);
+            this.RelativeStartY = Convert.ToInt32(relativeStartVector.y);
 
-            this.MaxX = this.RelativeStartX + Room.RoomWidth - 1;
-            this.MaxY = this.RelativeStartY + Room.RoomHeight - 1;
+            room.GlobalVectorPosition = relativeStartVector;
 
             GameObject roomObject = Instantiate(room.Template, room.GlobalVectorPosition, Quaternion.identity);
 
             roomObject.transform.SetParent(transform);
 
-            this.SetupWalls(room, roomObject.transform, this.RelativeStartX, this.RelativeStartY);
+            foreach (Cell cell in room.Cells)
+            {
+                Vector3 relativeCellVector = GetRelativeVectorPosition(cell.VectorPosition, floorStartX, floorStartY);
+                int relativeCellX = Convert.ToInt32(relativeCellVector.x);
+                int relativeCellY = Convert.ToInt32(relativeCellVector.y);
+
+                int maxX = relativeCellX + Room.RoomWidth - 1;
+                int maxY = relativeCellY + Room.RoomHeight - 1;
+
+                this.SetupWalls(cell, roomObject.transform, relativeCellX, relativeCellY, maxX, maxY);
+            }
 
             if (room.Type == Room.RoomType.entrance)
             {
@@ -135,15 +132,15 @@ namespace Prototype.GameGeneration.Rooms
         /// <summary>
         /// Add a wall at the bottom of the room.
         /// </summary>
-        /// <param name="room">The room to add the wall to.</param>
-        /// <param name="x">The relative x position of the room.</param>
-        /// <param name="y">The relative y position of the room.</param>
+        /// <param name="cell">The cell to add the wall to.</param>
+        /// <param name="x">The relative x position of the cell.</param>
+        /// <param name="y">The relative y position of the cell.</param>
         /// <param name="transform">The transform to append it to.</param>
-        private void AddBottomWall(Room room, int x, int y, Transform transform)
+        private void AddBottomWall(Cell cell, int x, int y, Transform transform)
         {
-            if (room.Doors.Select(Door => Door.Position).Contains(Door.DoorPositions.bottom))
+            if (cell.Doors.Select(Door => Door.Position).Contains(Door.DoorPositions.bottom))
             {
-                Door door = room.Doors.Where(door => door.Position == Door.DoorPositions.bottom).First();
+                Door door = cell.Doors.Where(door => door.Position == Door.DoorPositions.bottom).First();
                 this.AddHorizontalDoor(door, x, y - 1, this.GetHorizontalWallCenter(), transform);
                 return;
             }
@@ -155,17 +152,17 @@ namespace Prototype.GameGeneration.Rooms
         }
 
         /// <summary>
-        /// Add a wall at the left side of the room.
+        /// Add a wall at the left side of the cell.
         /// </summary>
-        /// <param name="room">The room to add the wall to.</param>
-        /// <param name="x">The relative x position of the room.</param>
-        /// <param name="y">The relative y position of the room.</param>
+        /// <param name="cell">The cell to add the wall to.</param>
+        /// <param name="x">The relative x position of the cell.</param>
+        /// <param name="y">The relative y position of the cell.</param>
         /// <param name="transform">The transform to append it to.</param>
-        private void AddLeftWall(Room room, int x, int y, Transform transform)
+        private void AddLeftWall(Cell cell, int x, int y, Transform transform)
         {
-            if (room.Doors.Select(Door => Door.Position).Contains(Door.DoorPositions.left))
+            if (cell.Doors.Select(Door => Door.Position).Contains(Door.DoorPositions.left))
             {
-                Door door = room.Doors.Where(door => door.Position == Door.DoorPositions.left).First();
+                Door door = cell.Doors.Where(door => door.Position == Door.DoorPositions.left).First();
                 this.AddVerticalDoor(door, x - 1, y, this.GetVerticalWallCenter(), transform);
                 return;
             }
@@ -177,18 +174,18 @@ namespace Prototype.GameGeneration.Rooms
         }
 
         /// <summary>
-        /// Add a wall at the right side of the room.
+        /// Add a wall at the right side of the cell.
         /// </summary>
-        /// <param name="room">The room to add the wall to.</param>
-        /// <param name="x">The relative x position of the room.</param>
-        /// <param name="y">The relative y position of the room.</param>
+        /// <param name="cell">The cell to add the wall to.</param>
+        /// <param name="x">The relative x position of the cell.</param>
+        /// <param name="y">The relative y position of the cell.</param>
         /// <param name="transform">The transform to append it to.</param>
-        private void AddRightWall(Room room, int x, int y, Transform transform)
+        private void AddRightWall(Cell cell, int x, int y, Transform transform)
         {
-            if (room.Doors.Select(Door => Door.Position).Contains(Door.DoorPositions.right))
+            if (cell.Doors.Select(Door => Door.Position).Contains(Door.DoorPositions.right))
             {
-                Door door = room.Doors.Where(door => door.Position == Door.DoorPositions.right).First();
-                this.AddVerticalDoor(door, this.MaxX + 1, y, this.GetVerticalWallCenter(), transform);
+                Door door = cell.Doors.Where(door => door.Position == Door.DoorPositions.right).First();
+                this.AddVerticalDoor(door, x + 1, y, this.GetVerticalWallCenter(), transform);
                 return;
             }
 
@@ -199,18 +196,18 @@ namespace Prototype.GameGeneration.Rooms
         }
 
         /// <summary>
-        /// Add a wall at the top of the room.
+        /// Add a wall at the top of the cell.
         /// </summary>
-        /// <param name="room">The room to add the wall to.</param>
-        /// <param name="x">The relative x position of the room.</param>
-        /// <param name="y">The relative y position of the room.</param>
+        /// <param name="cell">The cell to add the wall to.</param>
+        /// <param name="x">The relative x position of the cell.</param>
+        /// <param name="y">The relative y position of the cell.</param>
         /// <param name="transform">The transform to append it to.</param>
-        private void AddTopWall(Room room, int x, int y, Transform transform)
+        private void AddTopWall(Cell cell, int x, int y, Transform transform)
         {
-            if (room.Doors.Select(Door => Door.Position).Contains(Door.DoorPositions.top))
+            if (cell.Doors.Select(Door => Door.Position).Contains(Door.DoorPositions.top))
             {
-                Door door = room.Doors.Where(door => door.Position == Door.DoorPositions.top).First();
-                this.AddHorizontalDoor(door, x, this.MaxY + 1, this.GetHorizontalWallCenter(), transform);
+                Door door = cell.Doors.Where(door => door.Position == Door.DoorPositions.top).First();
+                this.AddHorizontalDoor(door, x, y + 1, this.GetHorizontalWallCenter(), transform);
                 return;
             }
 
@@ -223,12 +220,20 @@ namespace Prototype.GameGeneration.Rooms
         /// <summary>
         /// Add a wall at the specified position.
         /// </summary>
-        /// <param name="x">The relative x position of the room.</param>
-        /// <param name="y">The relative y position of the room.</param>
+        /// <param name="x">The relative x position of the cell.</param>
+        /// <param name="y">The relative y position of the cell.</param>
         /// <param name="transform">The transform to append it to.</param>
         private void AddWall(int x, int y, Transform transform)
         {
             Instantiate(this.Wall, new Vector3(x, y, 0f), Quaternion.identity).transform.SetParent(transform);
+        }
+
+        private Vector3 GetRelativeVectorPosition(Vector3 pos, int floorStartX, int floorStartY)
+        {
+            int relativeStartX = Convert.ToInt32((Room.RoomWidth + this.WallWidth) * pos.x) + floorStartX;
+            int relativeStartY = Convert.ToInt32((Room.RoomHeight + this.WallWidth) * pos.y) + floorStartY;
+
+            return new Vector3(relativeStartX, relativeStartY, 0f);
         }
 
         /// <summary>
@@ -238,33 +243,33 @@ namespace Prototype.GameGeneration.Rooms
         /// <param name="transform">The floor transform.</param>
         /// <param name="x">The relative X position of the floor.</param>
         /// <param name="y">The relative Y position of the floor.</param>
-        private void SetupWalls(Room room, Transform transform, int x, int y)
+        private void SetupWalls(Cell cell, Transform transform, int x, int y, int maxX, int maxY)
         {
-            foreach (Walls.WallTypes wall in room.Walls)
+            foreach (Walls.WallTypes wall in cell.Walls)
             {
                 switch (wall)
                 {
                     case Walls.WallTypes.top:
                         {
-                            this.AddTopWall(room, x, this.MaxY, transform);
+                            this.AddTopWall(cell, x, maxY, transform);
                             break;
                         }
 
                     case Walls.WallTypes.left:
                         {
-                            this.AddLeftWall(room, x, y, transform);
+                            this.AddLeftWall(cell, x, y, transform);
                             break;
                         }
 
                     case Walls.WallTypes.right:
                         {
-                            this.AddRightWall(room, this.MaxX, y, transform);
+                            this.AddRightWall(cell, maxX, y, transform);
                             break;
                         }
 
                     case Walls.WallTypes.bottom:
                         {
-                            this.AddBottomWall(room, x, y, transform);
+                            this.AddBottomWall(cell, x, y, transform);
                             break;
                         }
                 }

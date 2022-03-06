@@ -11,12 +11,14 @@ namespace Prototype.GameGeneration.Rooms
         /// <summary>
         /// Initializes a new instance of the <see cref="ShopRoom"/> class.
         /// </summary>
-        /// <param name="vectorPosition">Position of the room.</param>
-        /// <param name="walls">List of walls the room has.</param>
-        /// <param name="template">The prefab template of the room.</param>
-        public ShopRoom(Vector3 vectorPosition, List<Walls.WallTypes> walls, GameObject template) : base(vectorPosition, walls, template)
+        /// <param name="id">The room Id.</param>
+        /// <param name="drawFrom">The position to draw the room from.</param>
+        /// <param name="roomConfig">The room configuration.</param>
+        public ShopRoom(string id, Vector3 drawFrom, RoomConfig roomConfig) : base(id, drawFrom, roomConfig)
         {
-            this.Type = RoomType.shop;
         }
+
+        /// <inheritdoc/>
+        public override RoomType Type { get => RoomType.shop; }
     }
 }
