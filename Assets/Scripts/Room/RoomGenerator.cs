@@ -99,7 +99,7 @@ namespace Prototype.GameGeneration.Rooms
         /// <param name="floorStartY">The global Y start position.</param>
         public void SetupRoom(Room room, Transform transform, int floorStartX, int floorStartY)
         {
-            Vector3 relativeStartVector = GetRelativeVectorPosition(room.DrawFrom, floorStartX, floorStartY);
+            Vector3 relativeStartVector = this.GetRelativeVectorPosition(room.DrawFrom, floorStartX, floorStartY);
 
             this.RelativeStartX = Convert.ToInt32(relativeStartVector.x);
             this.RelativeStartY = Convert.ToInt32(relativeStartVector.y);
@@ -112,7 +112,7 @@ namespace Prototype.GameGeneration.Rooms
 
             foreach (Cell cell in room.Cells)
             {
-                Vector3 relativeCellVector = GetRelativeVectorPosition(cell.VectorPosition, floorStartX, floorStartY);
+                Vector3 relativeCellVector = this.GetRelativeVectorPosition(cell.VectorPosition, floorStartX, floorStartY);
                 int relativeCellX = Convert.ToInt32(relativeCellVector.x);
                 int relativeCellY = Convert.ToInt32(relativeCellVector.y);
 
@@ -228,6 +228,13 @@ namespace Prototype.GameGeneration.Rooms
             Instantiate(this.Wall, new Vector3(x, y, 0f), Quaternion.identity).transform.SetParent(transform);
         }
 
+        /// <summary>
+        /// Get the relative vector position based on the room width, height and wall width and the start position of the floor.
+        /// </summary>
+        /// <param name="pos">The position to convert.</param>
+        /// <param name="floorStartX">Start x position of the floor.</param>
+        /// <param name="floorStartY">Start y position of the floor.</param>
+        /// <returns>The relative vector position.</returns>
         private Vector3 GetRelativeVectorPosition(Vector3 pos, int floorStartX, int floorStartY)
         {
             int relativeStartX = Convert.ToInt32((Room.RoomWidth + this.WallWidth) * pos.x) + floorStartX;
@@ -239,10 +246,12 @@ namespace Prototype.GameGeneration.Rooms
         /// <summary>
         /// Set up walls for the specified room.
         /// </summary>
-        /// <param name="room">The room to setup the walls for.</param>
+        /// <param name="cell">The cell to setup the walls for.</param>
         /// <param name="transform">The floor transform.</param>
         /// <param name="x">The relative X position of the floor.</param>
         /// <param name="y">The relative Y position of the floor.</param>
+        /// <param name="maxX">The max X position of the floor.</param>
+        /// <param name="maxY">The max Y position of the floor.</param>
         private void SetupWalls(Cell cell, Transform transform, int x, int y, int maxX, int maxY)
         {
             foreach (Walls.WallTypes wall in cell.Walls)

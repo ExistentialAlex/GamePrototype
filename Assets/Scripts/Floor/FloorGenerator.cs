@@ -45,7 +45,7 @@ namespace Prototype.GameGeneration
             List<Tuple<Vector3, List<Cell>, Room.RoomType>> possibleRooms = new List<Tuple<Vector3, List<Cell>, Room.RoomType>>();
             string roomId = Room.GenerateRoomId(floor.FloorNo, position);
 
-            // === Create a Room of Size 3 === //
+            // Create a Room of Size 3 //
             if (Convert.ToBoolean(rand.Range(0, 2)) && floor.Current3Rooms < floor.FloorConfig.Max3Rooms)
             {
                 possibleRooms.AddRange(Rooms.Rooms.GetPossibleSize3Rooms(position, floor, roomId));
@@ -62,7 +62,7 @@ namespace Prototype.GameGeneration
                 return;
             }
 
-            // === Room of Size 2 === //
+            // Room of Size 2 //
             possibleRooms.AddRange(Rooms.Rooms.GetPossibleSize2Rooms(position, floor, roomId));
 
             if (possibleRooms.Count > 0)
@@ -74,7 +74,7 @@ namespace Prototype.GameGeneration
                 return;
             }
 
-            // === Create a standard room === //
+            // Create a standard room //
             AddRoom(
                 floor,
                 new StandardRoom(
@@ -142,7 +142,7 @@ namespace Prototype.GameGeneration
             AddEmptyRooms(floor);
 
             // Loop through remaining spaces to place new rooms
-            Debug.Log("=== Adding Remaining Rooms ===");
+            Debug.Log("Adding Remaining Rooms");
             for (int x = 0; x < floor.FloorConfig.FloorWidth; x++)
             {
                 for (int y = 0; y < floor.FloorConfig.FloorHeight; y++)
@@ -182,9 +182,11 @@ namespace Prototype.GameGeneration
         /// <param name="floor">The floor to add the room to.</param>
         private static void AddBossRoom(Floor floor)
         {
-            Debug.Log("=== Adding Boss Room ===");
-            int x = rand.Range(0, floor.FloorConfig.FloorWidth - 1); // will never be last column or row
-            int y = rand.Range(0, floor.FloorConfig.FloorHeight - 1);
+            Debug.Log("Adding Boss Room");
+
+            // Position in center of room.
+            int x = (floor.FloorConfig.FloorWidth - 1) / 2;
+            int y = (floor.FloorConfig.FloorHeight - 1) / 2;
             string roomId = Room.GenerateRoomId(floor.FloorNo, new Vector3(x, y, 0f));
             List<Cell> cells = new List<Cell>
             {
@@ -209,7 +211,7 @@ namespace Prototype.GameGeneration
                 {
                     if (floor.Cells[x, y].ParentRoomType != Room.RoomType.empty)
                     {
-                        Door.AddDoor(floor.FloorConfig.DoorConfig, floor.Cells, x, y, floor.FloorConfig.FloorWidth - 1, floor.FloorConfig.FloorHeight - 1);
+                        Door.AddDoor(floor.FloorConfig.DoorConfig, floor.Cells, x, y, floor.FloorConfig.FloorWidth - 1, floor.FloorConfig.FloorHeight - 1, rand.Range(3, 4));
                     }
 
                     // If it's an entrance room, we need to add 2 more doors
@@ -228,7 +230,7 @@ namespace Prototype.GameGeneration
         /// <param name="floor">The floor to add the room(s) to.</param>
         private static void AddEmptyRooms(Floor floor)
         {
-            Debug.Log("=== Adding Empty Rooms ===");
+            Debug.Log("Adding Empty Rooms");
             for (int i = 0; i < floor.FloorConfig.EmptyRooms; i++)
             {
                 int finalX = -1;
@@ -263,7 +265,7 @@ namespace Prototype.GameGeneration
         /// <param name="floor">The floor to add the room to.</param>
         private static void AddEntranceRoom(Floor floor)
         {
-            Debug.Log("=== Adding Entrance Room ===");
+            Debug.Log("Adding Entrance Room");
             GetRandomEmptyRoom(floor, out int x, out int y);
             Vector3 vectorPosition = new Vector3(x, y, 0f);
             string roomId = Room.GenerateRoomId(floor.FloorNo, vectorPosition);
@@ -282,7 +284,7 @@ namespace Prototype.GameGeneration
         /// <param name="floor">The floor to add the room(s) to.</param>
         private static void AddSecretRoom(Floor floor)
         {
-            Debug.Log("=== Adding Secret Rooms ===");
+            Debug.Log("Adding Secret Rooms");
             for (int i = 0; i < floor.NoSecrets; i++)
             {
                 GetRandomEmptyRoom(floor, out int x, out int y);
@@ -304,7 +306,7 @@ namespace Prototype.GameGeneration
         /// <param name="floor">The floor to add the room to.</param>
         private static void AddShopRoom(Floor floor)
         {
-            Debug.Log("=== Adding Shop ===");
+            Debug.Log("Adding Shop");
             GetRandomEmptyRoom(floor, out int x, out int y);
             Vector3 vectorPosition = new Vector3(x, y, 0f);
             string roomId = Room.GenerateRoomId(floor.FloorNo, vectorPosition);
@@ -359,7 +361,7 @@ namespace Prototype.GameGeneration
         /// <param name="floor">The floor to add the room(s) to.</param>
         private static void AddStairRooms(Floor floor)
         {
-            Debug.Log("=== Adding Stairs ===");
+            Debug.Log("Adding Stairs");
             if (floor.FloorNo == 0)
             {
                 AddStair(floor);
