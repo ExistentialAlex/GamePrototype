@@ -72,8 +72,8 @@ namespace Prototype.GameGeneration.Rooms
                         initialPosition,
                         new List<Cell>
                         {
-                            new Cell(initialPosition, roomId, Room.RoomType.doubleVertical, Walls.TopOpenSide()),
-                            new Cell(pos, roomId, Room.RoomType.doubleVertical, Walls.BottomOpenSide()),
+                            new Cell(floor.FloorConfig.RoomConfig.CellConfig, initialPosition, roomId, Room.RoomType.doubleVertical, Walls.TopOpenSide()),
+                            new Cell(floor.FloorConfig.RoomConfig.CellConfig, pos, roomId, Room.RoomType.doubleVertical, Walls.BottomOpenSide()),
                         },
                         Room.RoomType.doubleVertical));
                 }
@@ -86,8 +86,8 @@ namespace Prototype.GameGeneration.Rooms
                         initialPosition,
                         new List<Cell>
                         {
-                            new Cell(initialPosition, roomId, Room.RoomType.doubleHorizontal, Walls.RightOpenSide()),
-                            new Cell(pos, roomId, Room.RoomType.doubleHorizontal, Walls.LeftOpenSide()),
+                            new Cell(floor.FloorConfig.RoomConfig.CellConfig, initialPosition, roomId, Room.RoomType.doubleHorizontal, Walls.RightOpenSide()),
+                            new Cell(floor.FloorConfig.RoomConfig.CellConfig, pos, roomId, Room.RoomType.doubleHorizontal, Walls.LeftOpenSide()),
                         },
                         Room.RoomType.doubleHorizontal));
                 }
@@ -124,9 +124,9 @@ namespace Prototype.GameGeneration.Rooms
                     new Vector3(x, y, 0f),
                     new List<Cell>
                     {
-                        new Cell(new Vector3(x, y, 0f), roomId, Room.RoomType.tripleTopLeft, Walls.TopOpenSide()),
-                        new Cell(new Vector3(x, y + 1, 0f), roomId, Room.RoomType.tripleTopLeft, Walls.TopLeftCorner()),
-                        new Cell(new Vector3(x + 1, y + 1, 0f), roomId, Room.RoomType.tripleTopLeft, Walls.LeftOpenSide())
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y, 0f), roomId, Room.RoomType.tripleTopLeft, Walls.TopOpenSide()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y + 1, 0f), roomId, Room.RoomType.tripleTopLeft, Walls.TopLeftCorner()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x + 1, y + 1, 0f), roomId, Room.RoomType.tripleTopLeft, Walls.LeftOpenSide())
                     },
                     Room.RoomType.tripleTopLeft));
             }
@@ -140,9 +140,9 @@ namespace Prototype.GameGeneration.Rooms
                     new Vector3(x, y - 1, 0f),
                     new List<Cell>
                     {
-                        new Cell(new Vector3(x, y, 0f), roomId, Room.RoomType.tripleTopRight, Walls.RightOpenSide()),
-                        new Cell(new Vector3(x + 1, y, 0f), roomId, Room.RoomType.tripleTopRight, Walls.TopRightCorner()),
-                        new Cell(new Vector3(x + 1, y - 1, 0f), roomId, Room.RoomType.tripleTopRight, Walls.TopOpenSide())
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y, 0f), roomId, Room.RoomType.tripleTopRight, Walls.RightOpenSide()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x + 1, y, 0f), roomId, Room.RoomType.tripleTopRight, Walls.TopRightCorner()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x + 1, y - 1, 0f), roomId, Room.RoomType.tripleTopRight, Walls.TopOpenSide())
                     },
                     Room.RoomType.tripleTopRight));
             }
@@ -156,9 +156,9 @@ namespace Prototype.GameGeneration.Rooms
                     new Vector3(x, y, 0f),
                     new List<Cell>
                     {
-                        new Cell(new Vector3(x, y, 0f), roomId, Room.RoomType.tripleBottomRight, Walls.RightOpenSide()),
-                        new Cell(new Vector3(x + 1, y, 0f), roomId, Room.RoomType.tripleBottomRight, Walls.BottomRightCorner()),
-                        new Cell(new Vector3(x + 1, y + 1, 0f), roomId, Room.RoomType.tripleBottomRight, Walls.BottomOpenSide())
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y, 0f), roomId, Room.RoomType.tripleBottomRight, Walls.RightOpenSide()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x + 1, y, 0f), roomId, Room.RoomType.tripleBottomRight, Walls.BottomRightCorner()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x + 1, y + 1, 0f), roomId, Room.RoomType.tripleBottomRight, Walls.BottomOpenSide())
                     },
                     Room.RoomType.tripleBottomRight));
             }
@@ -172,9 +172,9 @@ namespace Prototype.GameGeneration.Rooms
                     new Vector3(x, y, 0f),
                     new List<Cell>
                     {
-                        new Cell(new Vector3(x, y, 0f), roomId, Room.RoomType.tripleBottomLeft, Walls.BottomLeftCorner()),
-                        new Cell(new Vector3(x, y + 1, 0f), roomId, Room.RoomType.tripleBottomLeft, Walls.BottomOpenSide()),
-                        new Cell(new Vector3(x + 1, y, 0f), roomId, Room.RoomType.tripleBottomLeft, Walls.LeftOpenSide())
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y, 0f), roomId, Room.RoomType.tripleBottomLeft, Walls.BottomLeftCorner()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y + 1, 0f), roomId, Room.RoomType.tripleBottomLeft, Walls.BottomOpenSide()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x + 1, y, 0f), roomId, Room.RoomType.tripleBottomLeft, Walls.LeftOpenSide())
                     },
                     Room.RoomType.tripleBottomLeft));
             }
@@ -189,9 +189,9 @@ namespace Prototype.GameGeneration.Rooms
                     new Vector3(x, y, 0f),
                     new List<Cell>
                     {
-                        new Cell(new Vector3(x, y, 0f), roomId, Room.RoomType.tripleVertical, Walls.TopOpenSide()),
-                        new Cell(new Vector3(x, y + 1, 0f), roomId, Room.RoomType.tripleVertical, Walls.VerticalOpen()),
-                        new Cell(new Vector3(x, y + 2, 0f), roomId, Room.RoomType.tripleVertical, Walls.BottomOpenSide())
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y, 0f), roomId, Room.RoomType.tripleVertical, Walls.TopOpenSide()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y + 1, 0f), roomId, Room.RoomType.tripleVertical, Walls.VerticalOpen()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y + 2, 0f), roomId, Room.RoomType.tripleVertical, Walls.BottomOpenSide())
                     },
                     Room.RoomType.tripleVertical));
             }
@@ -204,9 +204,9 @@ namespace Prototype.GameGeneration.Rooms
                     new Vector3(x, y, 0f),
                     new List<Cell>
                     {
-                        new Cell(new Vector3(x, y, 0f), roomId, Room.RoomType.tripleHorizontal, Walls.RightOpenSide()),
-                        new Cell(new Vector3(x + 1, y, 0f), roomId, Room.RoomType.tripleHorizontal, Walls.HorizontalOpen()),
-                        new Cell(new Vector3(x + 2, y, 0f), roomId, Room.RoomType.tripleHorizontal, Walls.LeftOpenSide())
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y, 0f), roomId, Room.RoomType.tripleHorizontal, Walls.RightOpenSide()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x + 1, y, 0f), roomId, Room.RoomType.tripleHorizontal, Walls.HorizontalOpen()),
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x + 2, y, 0f), roomId, Room.RoomType.tripleHorizontal, Walls.LeftOpenSide())
                     },
                     Room.RoomType.tripleHorizontal));
             }

@@ -87,10 +87,11 @@ namespace Prototype.GameGeneration
         /// <summary>
         /// Get the Door Config Component.
         /// </summary>
-        public void GetDoorConfig()
+        public void GetConfig()
         {
             DoorConfig = this.GetComponent<DoorConfig>();
             RoomConfig = this.GetComponent<RoomConfig>();
+            RoomConfig.GetConfig();
         }
     }
 }

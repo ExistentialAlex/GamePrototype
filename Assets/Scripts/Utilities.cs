@@ -27,7 +27,7 @@
                 return items[0];
             }
 
-            int randomNo = rand.Range(0, items.Length - 1);
+            int randomNo = rand.Range(0, items.Length);
 
             return items[randomNo];
         }

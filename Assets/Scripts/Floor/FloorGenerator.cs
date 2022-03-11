@@ -83,7 +83,7 @@ namespace Prototype.GameGeneration
                     floor.FloorConfig.RoomConfig),
                     new List<Cell>
                     {
-                        new Cell(position, roomId, Room.RoomType.singleRoom, Walls.AllWalls())
+                        new Cell(floor.FloorConfig.RoomConfig.CellConfig, position, roomId, Room.RoomType.singleRoom, Walls.AllWalls())
                     });
 
             return;
@@ -190,10 +190,10 @@ namespace Prototype.GameGeneration
             string roomId = Room.GenerateRoomId(floor.FloorNo, new Vector3(x, y, 0f));
             List<Cell> cells = new List<Cell>
             {
-                new Cell(new Vector3(x, y, 0f), roomId, Room.RoomType.boss, Walls.BottomLeftCorner()),
-                new Cell(new Vector3(x + 1, y, 0f), roomId, Room.RoomType.boss, Walls.BottomRightCorner()),
-                new Cell(new Vector3(x, y + 1, 0f), roomId, Room.RoomType.boss, Walls.TopLeftCorner()),
-                new Cell(new Vector3(x + 1, y + 1, 0f), roomId, Room.RoomType.boss, Walls.TopRightCorner()),
+                new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y, 0f), roomId, Room.RoomType.boss, Walls.BottomLeftCorner()),
+                new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x + 1, y, 0f), roomId, Room.RoomType.boss, Walls.BottomRightCorner()),
+                new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x, y + 1, 0f), roomId, Room.RoomType.boss, Walls.TopLeftCorner()),
+                new Cell(floor.FloorConfig.RoomConfig.CellConfig, new Vector3(x + 1, y + 1, 0f), roomId, Room.RoomType.boss, Walls.TopRightCorner()),
             };
 
             AddRoom(floor, new BossRoom(roomId, new Vector3(x, y, 0f), floor.FloorConfig.RoomConfig), cells);
@@ -252,7 +252,7 @@ namespace Prototype.GameGeneration
 
                 List<Cell> cells = new List<Cell>
                 {
-                    new Cell(finalVector, roomId, Room.RoomType.empty, Walls.AllWalls()),
+                    new Cell(floor.FloorConfig.RoomConfig.CellConfig, finalVector, roomId, Room.RoomType.empty, Walls.AllWalls()),
                 };
 
                 AddRoom(floor, new EmptyRoom(roomId, finalVector, floor.FloorConfig.RoomConfig), cells);
@@ -272,7 +272,7 @@ namespace Prototype.GameGeneration
 
             List<Cell> cells = new List<Cell>()
             {
-                new Cell(vectorPosition, roomId, Room.RoomType.entrance, Walls.AllWalls()),
+                new Cell(floor.FloorConfig.RoomConfig.CellConfig, vectorPosition, roomId, Room.RoomType.entrance, Walls.AllWalls()),
             };
 
             AddRoom(floor, new EntranceRoom(roomId, vectorPosition, floor.FloorConfig.RoomConfig), cells);
@@ -293,7 +293,7 @@ namespace Prototype.GameGeneration
 
                 List<Cell> cells = new List<Cell>()
                 {
-                    new Cell(vectorPosition, roomId, Room.RoomType.secret, Walls.AllWalls()),
+                    new Cell(floor.FloorConfig.RoomConfig.CellConfig, vectorPosition, roomId, Room.RoomType.secret, Walls.AllWalls()),
                 };
 
                 AddRoom(floor, new SecretRoom(roomId, vectorPosition, floor.FloorConfig.RoomConfig), cells);
@@ -313,7 +313,7 @@ namespace Prototype.GameGeneration
 
             List<Cell> cells = new List<Cell>()
             {
-                new Cell(vectorPosition, roomId, Room.RoomType.shop, Walls.AllWalls()),
+                new Cell(floor.FloorConfig.RoomConfig.CellConfig, vectorPosition, roomId, Room.RoomType.shop, Walls.AllWalls()),
             };
 
             AddRoom(floor, new ShopRoom(roomId, vectorPosition, floor.FloorConfig.RoomConfig), cells);
@@ -331,7 +331,7 @@ namespace Prototype.GameGeneration
 
             List<Cell> cells = new List<Cell>()
             {
-                new Cell(vectorPosition, roomId, Room.RoomType.stair, Walls.AllWalls()),
+                new Cell(floor.FloorConfig.RoomConfig.CellConfig, vectorPosition, roomId, Room.RoomType.stair, Walls.AllWalls()),
             };
 
             floor.Stairs.Add((StairRoom)AddRoom(floor, new StairRoom(roomId, vectorPosition, floor.FloorConfig.RoomConfig), cells));
@@ -349,7 +349,7 @@ namespace Prototype.GameGeneration
 
             List<Cell> cells = new List<Cell>()
             {
-                new Cell(vectorPosition, roomId, Room.RoomType.stairDown, Walls.AllWalls()),
+                new Cell(floor.FloorConfig.RoomConfig.CellConfig, vectorPosition, roomId, Room.RoomType.stairDown, Walls.AllWalls()),
             };
 
             floor.Stairs.Add((StairRoom)AddRoom(floor, new StairDownRoom(roomId, vectorPosition, floor.FloorConfig.RoomConfig), cells));

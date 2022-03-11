@@ -114,6 +114,12 @@ namespace Prototype.GameGeneration.Rooms
         }
 
         /// <summary>
+        /// Gets the cell config for the room config.
+        /// </summary>
+        /// <value>The cell config.</value>
+        public CellConfig CellConfig { get; private set; }
+
+        /// <summary>
         /// Gets the double standard horizontal room templates.
         /// </summary>
         /// <value>The double standard horizontal room templates.</value>
@@ -261,6 +267,14 @@ namespace Prototype.GameGeneration.Rooms
         {
             get => this.tripleStandardVerticalRoomTemplates;
             private set => this.tripleStandardVerticalRoomTemplates = value;
+        }
+
+        /// <summary>
+        /// Get the additional configurations for Room Config.
+        /// </summary>
+        internal void GetConfig()
+        {
+            this.CellConfig = this.GetComponent<CellConfig>();
         }
     }
 }

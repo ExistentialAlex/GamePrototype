@@ -20,6 +20,12 @@ namespace Prototype.GameGeneration
         private static GameObject player = null;
 
         /// <summary>
+        /// The enemy prefabs, containing sprint info and scripts.
+        /// </summary>
+        [SerializeField]
+        private GameObject[] enemyPrefabs;
+
+        /// <summary>
         /// The number of levels for this game.
         /// </summary>
         [SerializeField]
@@ -62,6 +68,16 @@ namespace Prototype.GameGeneration
         /// <value>The current level.</value>
         [HideInInspector]
         public Level CurrentLevel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the array of enemy prefabs.
+        /// </summary>
+        /// <value>The enemy prefabs.</value>
+        public GameObject[] EnemyPrefabs
+        {
+            get => this.enemyPrefabs;
+            set => this.enemyPrefabs = value;
+        }
 
         /// <summary>
         /// Gets or sets the number of levels.
@@ -160,7 +176,7 @@ namespace Prototype.GameGeneration
                 Instance = this;
                 Instance.roomGenerator = this.GetComponent<RoomGenerator>();
                 Instance.FloorConfig = this.GetComponent<FloorConfig>();
-                Instance.FloorConfig.GetDoorConfig();
+                Instance.FloorConfig.GetConfig();
                 Instance.LevelNo = 0;
             }
             else if (Instance != this)

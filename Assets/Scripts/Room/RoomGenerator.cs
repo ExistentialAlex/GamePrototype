@@ -1,8 +1,10 @@
 namespace Prototype.GameGeneration.Rooms
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
+    using rand = UnityEngine.Random;
 
     /// <summary>
     /// The room generator class.
@@ -120,6 +122,7 @@ namespace Prototype.GameGeneration.Rooms
                 int maxY = relativeCellY + Room.RoomHeight - 1;
 
                 this.SetupWalls(cell, roomObject.transform, relativeCellX, relativeCellY, maxX, maxY);
+                this.PlaceEnemies(cell, roomObject.transform, relativeCellX, relativeCellY, maxX, maxY);
             }
 
             if (room.Type == Room.RoomType.entrance)
@@ -241,6 +244,36 @@ namespace Prototype.GameGeneration.Rooms
             int relativeStartY = Convert.ToInt32((Room.RoomHeight + this.WallWidth) * pos.y) + floorStartY;
 
             return new Vector3(relativeStartX, relativeStartY, 0f);
+        }
+
+        /// <summary>
+        /// Place the enemies in the cell.
+        /// </summary>
+        /// <param name="cell">The cell to place enemies in.</param>
+        /// <param name="transform">The parent room transform.</param>
+        /// <param name="x">The relative start x position.</param>
+        /// <param name="y">The relative start y position.</param>
+        /// <param name="maxX">The maximum x position.</param>
+        /// <param name="maxY">The maximum y position.</param>
+        private void PlaceEnemies(Cell cell, Transform transform, int x, int y, int maxX, int maxY)
+        {
+            List<int> occupiedX = new List<int>();
+            List<int> occupiedY = new List<int>();
+
+            foreach (GameObject enemy in cell.Enemies)
+            {
+                int randX;
+                int randY;
+                do
+                {
+                    randX = rand.Range(x, maxX);
+                    randY = rand.Range(y, maxY);
+                }
+                while (occupiedX.Contains(randX) && occupiedY.Contains(randY));
+
+                GameObject instantiatedEnemy = Instantiate(enemy, new Vector3(randX, randY, 0f), Quaternion.identity);
+                instantiatedEnemy.transform.SetParent(transform);
+            }
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-namespace Prototype.GameGeneration.Player
+namespace Prototype.GameGeneration.Sprite
 {
     using System;
     using Prototype.GameGeneration.Rooms;
@@ -7,34 +7,8 @@ namespace Prototype.GameGeneration.Player
     /// <summary>
     /// Script controlling the behaviors of the player sprite.
     /// </summary>
-    public class Player : MonoBehaviour
+    public class Player : MovingObject
     {
-        /// <summary>
-        /// The animation controller for the player.
-        /// </summary>
-        private Animator animator;
-
-        /// <summary>
-        /// The box collider component of the player.
-        /// </summary>
-        private BoxCollider2D boxCollider;
-
-        /// <summary>
-        /// Whether the player has hit something or not.
-        /// </summary>
-        private RaycastHit2D hit;
-
-        /// <summary>
-        /// The change in movement.
-        /// </summary>
-        private Vector3 moveDelta;
-
-        /// <summary>
-        /// The player's speed.
-        /// </summary>
-        [SerializeField]
-        private float playerSpeed;
-
         /// <summary>
         /// Booleans defined in the animation pane.
         /// </summary>
@@ -52,14 +26,18 @@ namespace Prototype.GameGeneration.Player
             playerHit
         }
 
-        /// <summary>
-        /// Gets or sets the player speed.
-        /// </summary>
-        /// <value>The player's speed.</value>
-        public float PlayerSpeed
+        /// <inheritdoc/>
+        protected override void MoveAnimation(Vector3 movement)
         {
-            get => this.playerSpeed;
-            set => this.playerSpeed = value;
+            // If we're actually moving (I.e. the user has a button pressed) then animate the player walking
+            if (movement.x != 0 || movement.y != 0)
+            {
+                this.Animator.SetBool(Convert.ToString(AnimationBools.playerWalk), true);
+            }
+            else
+            {
+                this.Animator.SetBool(Convert.ToString(AnimationBools.playerWalk), false);
+            }
         }
 
         /// <summary>
@@ -68,62 +46,10 @@ namespace Prototype.GameGeneration.Player
         /// </summary>
         private void FixedUpdate()
         {
-            this.moveDelta = Vector3.zero;
-            float playerSpeed = Time.deltaTime * this.PlayerSpeed;
-
             float x = Input.GetAxisRaw(Convert.ToString(Configuration.InputAxes.Horizontal));
             float y = Input.GetAxisRaw(Convert.ToString(Configuration.InputAxes.Vertical));
 
-            // Reset the Move Delta
-            this.moveDelta = new Vector3(x, y, 0f);
-
-            // Swap Sprite Direction
-            if (this.moveDelta.x > 0)
-            {
-                this.transform.localScale = Vector3.one;
-            }
-            else if (this.moveDelta.x < 0)
-            {
-                this.transform.localScale = new Vector3(-1, 1, 1);
-            }
-
-            // Make sure we can move in the Y direction
-            this.hit = Physics2D.BoxCast(
-                this.transform.position,
-                this.boxCollider.size,
-                0,
-                new Vector2(0, this.moveDelta.y),
-                Mathf.Abs(this.moveDelta.y * playerSpeed));
-
-            if (this.hit.collider == null || this.hit.transform.gameObject.layer == LayerMask.GetMask(Convert.ToString(Configuration.SortingLayers.Floor)))
-            {
-                // Move
-                this.transform.Translate(0, this.moveDelta.y * playerSpeed, 0f);
-            }
-
-            // Make sure we can move in the X direction
-            this.hit = Physics2D.BoxCast(
-                this.transform.position,
-                this.boxCollider.size,
-                0,
-                new Vector2(this.moveDelta.x, 0),
-                Mathf.Abs(this.moveDelta.x * playerSpeed));
-
-            if (this.hit.collider == null || this.hit.transform.gameObject.layer == LayerMask.GetMask(Convert.ToString(Configuration.SortingLayers.Floor)))
-            {
-                // Move
-                this.transform.Translate(this.moveDelta.x * playerSpeed, 0, 0f);
-            }
-
-            // If we're actually moving (I.e. the user has a button pressed) then animate the player walking
-            if (x != 0 || y != 0)
-            {
-                this.animator.SetBool(Convert.ToString(AnimationBools.playerWalk), true);
-            }
-            else
-            {
-                this.animator.SetBool(Convert.ToString(AnimationBools.playerWalk), false);
-            }
+            this.UpdateMotor(new Vector3(x, y, 0f));
         }
 
         /// <summary>
@@ -213,16 +139,6 @@ namespace Prototype.GameGeneration.Player
                         break;
                     }
             }
-        }
-
-        /// <summary>
-        /// Run when the player script starts.
-        /// Gets instances of the animator and box collider components.
-        /// </summary>
-        private void Start()
-        {
-            this.animator = this.GetComponent<Animator>();
-            this.boxCollider = this.GetComponent<BoxCollider2D>();
         }
     }
 }
