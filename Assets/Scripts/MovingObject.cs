@@ -1,37 +1,27 @@
-namespace Prototype.GameGeneration.Sprite
+namespace Prototype.Units
 {
+    using Prototype.Common;
+    using Prototype.GameGeneration;
     using System;
     using UnityEngine;
 
     /// <summary>
     /// Moving Object class.
     /// </summary>
-    public abstract class MovingObject : MonoBehaviour
+    public abstract class MovingObject : Collidable
     {
         [SerializeField]
-        private float xSpeed;
+        private float speed;
 
-        [SerializeField]
-        private float ySpeed;
 
         /// <summary>
-        /// Gets or sets the speed to move in the x-axis.
+        /// Gets or sets the speed to move.
         /// </summary>
-        /// <value>The X Speed.</value>
-        public float XSpeed
+        /// <value>The Speed.</value>
+        public float Speed
         {
-            get => this.xSpeed;
-            set => this.xSpeed = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the speed to move in the y-axis.
-        /// </summary>
-        /// <value>The Y Speed.</value>
-        public float YSpeed
-        {
-            get => this.ySpeed;
-            set => this.ySpeed = value;
+            get => this.speed;
+            set => this.speed = value;
         }
 
         /// <summary>
@@ -39,12 +29,6 @@ namespace Prototype.GameGeneration.Sprite
         /// </summary>
         /// <value>The animator.</value>
         protected internal Animator Animator { get; set; }
-
-        /// <summary>
-        /// Gets or sets the box collider component of the player.
-        /// </summary>
-        /// <value>The object's box collider.</value>
-        protected internal BoxCollider2D BoxCollider { get; set; }
 
         /// <summary>
         /// Gets or sets the change in movement.
@@ -65,21 +49,28 @@ namespace Prototype.GameGeneration.Sprite
         protected abstract void MoveAnimation(Vector3 movement);
 
         /// <inheritdoc/>
-        protected virtual void Start()
+        protected override void Start()
         {
+            base.Start();
+
             // Get a component reference to this object's BoxCollider2D
-            this.BoxCollider = this.GetComponent<BoxCollider2D>();
             this.Animator = this.GetComponent<Animator>();
+        }
+
+        /// <inheritdoc/>
+        protected override void Update()
+        {
+            base.Update();
         }
 
         /// <summary>
         /// Move the object to the input position.
         /// </summary>
         /// <param name="input">Vector to move to.</param>
-        protected virtual void UpdateMotor(Vector3 input)
+        protected virtual void UpdateMotor(Vector3 input, float distance = 1f)
         {
             // Reset the Move Delta
-            this.MoveDelta = new Vector3(input.x * this.XSpeed, input.y * this.YSpeed, 0f);
+            this.MoveDelta = new Vector3(input.x, input.y, 0f);
 
             // Swap Sprite Direction
             if (this.MoveDelta.x > 0)
@@ -91,40 +82,33 @@ namespace Prototype.GameGeneration.Sprite
                 this.transform.localScale = new Vector3(-1, 1, 1);
             }
 
-            // Make sure we can move in the Y direction
-            this.Hit = Physics2D.BoxCast(
-                this.transform.position,
-                this.BoxCollider.size,
-                0,
-                new Vector2(0, this.MoveDelta.y),
-                Mathf.Abs(this.MoveDelta.y * Time.deltaTime));
 
-            if (this.Hit.collider == null || this.Hit.transform.gameObject.layer == LayerMask.GetMask(Convert.ToString(Configuration.SortingLayers.Floor)))
+            // if we can't move diagonally
+            bool canMove = this.CanMove(this.MoveDelta, distance * this.Speed);
+
+            if (!canMove)
             {
-                // Move
-                this.transform.Translate(0, this.MoveDelta.y * Time.deltaTime, 0f);
+                this.MoveDelta = new Vector3(input.x, 0f, 0f);
+                canMove = this.MoveDelta.x != 0f && this.CanMove(this.MoveDelta, distance * this.Speed);
+                if (!canMove)
+                {
+                    this.MoveDelta = new Vector3(0f, input.y, 0f);
+                    canMove = this.MoveDelta.y != 0f && this.CanMove(this.MoveDelta, distance * this.Speed);
+                }
             }
 
-            // Make sure we can move in the X direction
-            this.Hit = Physics2D.BoxCast(
-                this.transform.position,
-                this.BoxCollider.size,
-                0,
-                new Vector2(this.MoveDelta.x, 0),
-                Mathf.Abs(this.MoveDelta.x * Time.deltaTime));
-
-            if (this.Hit.collider == null || this.Hit.transform.gameObject.layer == LayerMask.GetMask(Convert.ToString(Configuration.SortingLayers.Floor)))
+            if (canMove)
             {
                 // Move
-                this.transform.Translate(this.MoveDelta.x * Time.deltaTime, 0, 0f);
+                this.transform.Translate(this.MoveDelta.x * distance * this.Speed * Time.deltaTime, this.MoveDelta.y * distance * this.Speed * Time.deltaTime, 0f);
+                this.MoveAnimation(this.MoveDelta);
             }
-
-            this.MoveAnimation(this.MoveDelta);
         }
 
-        /// <inheritdoc/>
-        private void Update()
+        private bool CanMove(Vector3 dir, float distance)
         {
+            this.Hit = Physics2D.BoxCast(this.transform.position, this.BoxCollider.size, 0, dir, Mathf.Abs(distance * Time.deltaTime));
+            return this.Hit.collider == null || this.Hit.transform.gameObject.layer == LayerMask.GetMask(Convert.ToString(Configuration.SortingLayers.Floor));
         }
     }
 }

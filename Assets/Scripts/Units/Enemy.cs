@@ -1,11 +1,12 @@
-namespace Prototype.GameGeneration.Sprite
+namespace Prototype.Units
 {
+    using Prototype.GameGeneration;
     using UnityEngine;
 
     /// <summary>
     /// Enemy class.
     /// </summary>
-    public class Enemy : MovingObject
+    public class Enemy : Unit
     {
         /// <summary>
         /// The distance an enemy will chase the player.
@@ -56,12 +57,25 @@ namespace Prototype.GameGeneration.Sprite
         {
         }
 
+        protected override void OnCollide(Collider2D collider)
+        {
+            if (collider.name == "Player")
+            {
+                this.collidingWithPlayer = true;
+            }
+            else
+            {
+                this.collidingWithPlayer = false;
+            }
+        }
+
         /// <inheritdoc/>
         protected override void Start()
         {
             base.Start();
             this.playerTransform = GameManager.Player.transform;
             this.startingPosition = transform.position;
+            this.collidingWithPlayer = false;
         }
 
         /// <inheritdoc/>
@@ -83,19 +97,14 @@ namespace Prototype.GameGeneration.Sprite
                 }
                 else
                 {
-                    this.UpdateMotor((this.startingPosition - this.transform.position).normalized);
+                    this.UpdateMotor(this.startingPosition - this.transform.position);
                 }
             }
             else
             {
-                if (this.startingPosition != this.transform.position)
-                {
-                    this.UpdateMotor((this.startingPosition - this.transform.position).normalized);
-                }
+                this.UpdateMotor(this.startingPosition - this.transform.position);
                 this.chasing = false;
             }
-
-            this.collidingWithPlayer = false;
         }
     }
 }

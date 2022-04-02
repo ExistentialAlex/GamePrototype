@@ -89,7 +89,7 @@ namespace Prototype.GameGeneration.Rooms
         public void InstantiatePlayer()
         {
             GameManager.Player.transform.position = this.PlayerPosition;
-            GameManager.Instance.PlayerReady = true;
+            DungeonGenerator.Instance.PlayerReady = true;
         }
 
         /// <summary>

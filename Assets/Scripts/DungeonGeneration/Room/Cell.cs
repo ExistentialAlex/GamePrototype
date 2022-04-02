@@ -94,7 +94,7 @@ namespace Prototype.GameGeneration.Rooms
             {
                 if (!this.EnemyExcludedRooms.Contains(this.ParentRoomType))
                 {
-                    this.Enemies.Add(Utilities.PickRandom(GameManager.Instance.EnemyPrefabs));
+                    this.Enemies.Add(Utilities.PickRandom(DungeonGenerator.Instance.EnemyPrefabs));
                 }
             }
         }
